@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/bottom_sheet"
+    android:layout_width="match_parent"
+    android:layout_height="260dp"
+    android:background="@color/Lavender"
+    android:orientation="vertical"
+    app:behavior_hideable="true"
+    app:behavior_peekHeight="80dp"
+    app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior">
+
+    <TextView
+
+        android:id="@+id/marker_grab_text"
+        android:layout_width="match_parent"
+        android:layout_height="20dp"
+        android:background="@color/Plum"
+        android:gravity="center"
+        android:text="Тянуть"
+        android:textColor="@android:color/white"
+        android:textSize="14sp" />
+
+    <TextView
+
+        android:id="@+id/marker_header"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:background="@color/Plum"
+        android:gravity="center"
+        android:text="@string/bottom_card_header"
+        android:textColor="@android:color/white"
+        android:textSize="24sp" />
+
+    <TextView
+        android:id="@+id/marker_description"
+        android:layout_width="match_parent"
+        android:layout_height="80dp"
+        android:gravity="center"
+        android:text="@string/bottom_card_context"
+        android:textColor="@android:color/white"
+        android:textSize="24sp" />
+
+
+    <Button
+        android:layout_marginTop="8dp"
+        android:layout_gravity="center"
+        android:id="@+id/marker_delete_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Удалить"/>
+
+</LinearLayout>
