@@ -1,8 +1,12 @@
 package com.example.places;
 
 import androidx.fragment.app.FragmentActivity;
+
+import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.location.Location;
 import android.os.Bundle;
 
@@ -31,6 +35,7 @@ import com.google.android.gms.maps.GoogleMap.OnMapLongClickListener;
 import com.google.android.gms.maps.GoogleMap.OnMarkerClickListener;
 import com.google.android.gms.maps.GoogleMap.OnInfoWindowClickListener;
 import com.google.android.gms.maps.GoogleMap.OnInfoWindowCloseListener;
+import com.google.android.gms.maps.GoogleMap.OnMarkerDragListener;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
@@ -65,11 +70,13 @@ import java.util.List;
  * НЕОБХОДИМО СДЕЛАТЬ КАК-ТО ОТМЕЧАНИЕ ПОСЕЩЕННЫХ МЕСТ
  */
 public class MapsActivity extends AppCompatActivity
-        implements OnInfoWindowCloseListener, OnMarkerClickListener, OnInfoWindowClickListener, OnMapLongClickListener, OnMapReadyCallback {
+        implements OnInfoWindowCloseListener, OnMarkerClickListener, OnMarkerDragListener,
+                    OnInfoWindowClickListener, OnMapLongClickListener, OnMapReadyCallback {
 
     private LinearLayout llBottomSheet;
     private BottomSheetBehavior bottomSheetBehavior;
     private int marker_counter = 0;
+    SQLiteDatabase database;
 
     private static final String TAG = MapsActivity.class.getSimpleName();
     private GoogleMap map;
@@ -109,6 +116,12 @@ public class MapsActivity extends AppCompatActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        database = openOrCreateDatabase("myplacesx.db", MODE_PRIVATE, null);
+        database.execSQL("CREATE TABLE IF NOT EXISTS markers (latitude REAL, longitude REAL, title TEXT, snippet TEXT, drag INT, color REAL)");
+
+        //
+
+
 
         // [START_EXCLUDE silent]
         // [START maps_current_place_on_create_save_instance_state]
@@ -204,6 +217,9 @@ public class MapsActivity extends AppCompatActivity
         this.map.setOnInfoWindowClickListener(this);
         this.map.setOnMarkerClickListener(this);
         this.map.setOnInfoWindowCloseListener(this);
+        this.map.setOnMarkerDragListener(this);
+
+        // SHOW MARKERS FROM DATABASE
 
         // [START_EXCLUDE]
         // [START map_current_place_set_info_window_adapter]
@@ -243,6 +259,8 @@ public class MapsActivity extends AppCompatActivity
 
         // Get the current location of the device and set the position of the map.
         getDeviceLocation();
+
+        getmarkerDB();
     }
     // [END maps_current_place_on_map_ready]
 
@@ -329,11 +347,9 @@ public class MapsActivity extends AppCompatActivity
     }
     // [END maps_current_place_on_request_permissions_result]
 
-    /**
-     * Prompts the user to select the current place from a list of likely places, and shows the
-     * current place on the map - provided the user has granted location permission.
-     */
-    // [START maps_current_place_show_current_place]
+
+
+
     private void showCurrentPlace() {
         if (map == null) {
             return;
@@ -410,12 +426,10 @@ public class MapsActivity extends AppCompatActivity
             getLocationPermission();
         }
     }
-    // [END maps_current_place_show_current_place]
 
-    /**
-     * Displays a form allowing the user to select a place from a list of likely places.
-     */
-    // [START maps_current_place_open_places_dialog]
+
+
+
     private void openPlacesDialog() {
         // Ask the user to choose the place where they are now.
         DialogInterface.OnClickListener listener = new DialogInterface.OnClickListener() {
@@ -489,12 +503,15 @@ public class MapsActivity extends AppCompatActivity
                                 LocalDateTime currentDateTime = LocalDateTime.now();
                                 DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm");
                                 String formattedDateTime = currentDateTime.format(formatter);
+                                marker_counter++;
+                                int a = LocalDateTime.now().hashCode();
                                 map.addMarker(new MarkerOptions()
                                         .position(current)
-                                        .title("Я был тут")
-                                        .snippet(formattedDateTime)
+                                        .title("Я был тут #"+marker_counter)
+                                        .snippet(String.valueOf(a))
                                         .draggable(true)
                                         .icon(BitmapDescriptorFactory.defaultMarker(color)));
+                                putmarkerDB(current.latitude, current.longitude, "Я был тут #"+marker_counter, String.valueOf(a), true, color); //ТОЖЕ ПЕРЕПИСАТЬ НАДО БЫ
                             }
                         } else {
                             Log.d(TAG, "Current location is null. Using defaults.");
@@ -515,13 +532,17 @@ public class MapsActivity extends AppCompatActivity
 
     @Override
     public void onMapLongClick(@NonNull LatLng currentPressedPosition) {
+        int a = LocalDateTime.now().hashCode();
         float color = (float)Math.random()*359;
         marker_counter++;
         map.addMarker(new MarkerOptions()
                 .position(currentPressedPosition)
                 .title("Маркер #"+marker_counter)
+                .snippet(String.valueOf(a))
                 .draggable(true)
                 .icon(BitmapDescriptorFactory.defaultMarker(color)));
+        putmarkerDB(currentPressedPosition.latitude, currentPressedPosition.longitude,
+                "Маркер #"+marker_counter, String.valueOf(a), true, color);
     }
 
     @Override
@@ -540,8 +561,11 @@ public class MapsActivity extends AppCompatActivity
                                 //Вводим текст и отображаем в строке ввода на основном экране:
                                 marker.setTitle(input.getText().toString());
                                 TextView tv = llBottomSheet.findViewById(R.id.marker_header);
+                                TextView dv = llBottomSheet.findViewById(R.id.marker_description);
+                                renamemarkerDB(dv.getText().toString(), marker.getTitle()); /// ЭТО НАДО ПЕРЕПИСАТЬ ПОД СНИППЕТ И КАК_ТО ПОЛУЧШЕ СДЕЛАТЬ
                                 tv.setText(input.getText().toString());
                                 marker.showInfoWindow();
+
                             }
                         })
                 .setNegativeButton("Отменить",
@@ -574,6 +598,7 @@ public class MapsActivity extends AppCompatActivity
             @Override
             public void onClick(View v) {
                 marker.setVisible(false);
+                deletemarkerDB(marker);
             }
         });
 
@@ -587,5 +612,82 @@ public class MapsActivity extends AppCompatActivity
     }
     // [END maps_current_place_update_location_ui]
 
+    private void putmarkerDB(double latitude, double longitude, String title, String snippet, boolean draggable, float color){
+        ContentValues dataput = new ContentValues();
+        dataput.put("latitude", latitude);
+        dataput.put("longitude", longitude);
+        dataput.put("title", title);
+        dataput.put("snippet", snippet);
+        Log.i("I am trying to put snippet", snippet);
+        if (draggable)
+            dataput.put("drag", 1);
+        else
+            dataput.put("drag", 0);
+        dataput.put("color", color);
 
+        database.insert("markers", null, dataput);
+    }
+
+    private void getmarkerDB(){
+        Cursor cursor = database.rawQuery("SELECT * FROM markers", null);
+        while(cursor.moveToNext()){
+            marker_counter++;
+            double latitude = cursor.getDouble(0);
+            double longitude = cursor.getDouble(1);
+            String title = cursor.getString(2);
+            String snippet = cursor.getString(3);
+            int drag = cursor.getInt(4);
+            float color = cursor.getFloat(5);
+
+            boolean draggable = drag == 1;
+            Log.i("WTF?????????", title);
+            LatLng position = new LatLng(latitude, longitude);
+
+            map.addMarker(new MarkerOptions()
+                    .position(position)
+                    .title(title)
+                    .snippet(snippet)
+                    .draggable(draggable)
+                    .icon(BitmapDescriptorFactory.defaultMarker(color)));
+        }
+        cursor.close();
+    }
+
+    private void renamemarkerDB(String snippet, String title_new){
+        ContentValues cv = new ContentValues();
+        cv.put("title", title_new);
+        database.update("markers", cv, "snippet = "+snippet, null);
+    }
+    private void dragmarkerDB(Marker marker){
+        ContentValues cv = new ContentValues();
+        cv.put("latitude", marker.getPosition().latitude);
+        cv.put("longitude", marker.getPosition().longitude);
+        database.update("markers", cv, "snippet = "+marker.getSnippet(), null);
+    }
+
+    private void deletemarkerDB(Marker marker){
+        Log.i("deleting",""+database.delete("markers", "snippet="+marker.getSnippet(), null));
+    }
+
+    @Override
+    public void onMarkerDragStart(@NonNull Marker marker) {
+
+    }
+
+    @Override
+    public void onMarkerDrag(@NonNull Marker marker) {
+
+    }
+
+    @Override
+    public void onMarkerDragEnd(@NonNull Marker marker) {
+        dragmarkerDB(marker);
+    }
+
+    @Override
+    protected void onStop() {
+        // call the superclass method first
+        super.onStop();
+        database.close();
+    }
 }
