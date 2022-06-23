@@ -1,7 +1,5 @@
 package com.example.places;
 
-import androidx.fragment.app.FragmentActivity;
-
 import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.content.pm.PackageManager;
@@ -52,19 +50,15 @@ import com.google.android.libraries.places.api.net.FindCurrentPlaceRequest;
 import com.google.android.libraries.places.api.net.FindCurrentPlaceResponse;
 import com.google.android.libraries.places.api.net.PlacesClient;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
-import com.google.android.material.slider.Slider;
-
-import com.google.android.material.slider.Slider.OnChangeListener;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 /**
- * НЕОБХОДИМО СДЕЛАТЬ УДАЛЕНИЕ МЕТОК
- * НЕОБХОДИМО СДЕЛАТЬ ХРАНЕНИЕ ДАННЫХ
+ * НЕОБХОДИМО СДЕЛАТЬ УДАЛЕНИЕ МЕТОК = ready
+ * НЕОБХОДИМО СДЕЛАТЬ ХРАНЕНИЕ ДАННЫХ = ready
  * НЕОБХОДИМА АВТОРИЗАЦИЯ
  * НЕОБХОДИМО ДЕЛИТЬСЯ МЕСТАМИ
  * НЕОБХОДИМО СДЕЛАТЬ КАК-ТО ОТМЕЧАНИЕ ПОСЕЩЕННЫХ МЕСТ
@@ -135,7 +129,7 @@ public class MapsActivity extends AppCompatActivity
 
         // Retrieve the content view that renders the map.
 
-        setContentView(R.layout.wtf);
+        setContentView(R.layout.fragment_places);
 
         llBottomSheet = (LinearLayout) findViewById(R.id.bottom_sheet);
         bottomSheetBehavior = BottomSheetBehavior.from(llBottomSheet);
