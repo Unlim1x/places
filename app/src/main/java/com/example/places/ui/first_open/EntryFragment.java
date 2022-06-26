@@ -1,5 +1,8 @@
 package com.example.places.ui.first_open;
 
+import android.content.ContentValues;
+import android.content.Intent;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,28 +17,25 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 
 import com.example.places.MainActivity;
 import com.example.places.R;
 import com.example.places.databinding.FragmentEntryBinding;
+import com.example.places.ui.dialogs.OneButtonDialog;
 
 
 public class EntryFragment extends Fragment {
 
     FragmentEntryBinding binding;
+    SQLiteDatabase database;
     private static final String ARG_PARAM1 = "param1";
 
-
-
-
-    public static EntryFragment newInstance(int param1) {
-        EntryFragment fragment = new EntryFragment();
-        Bundle args = new Bundle();
-        args.putInt(ARG_PARAM1, param1);
-
-        fragment.setArguments(args);
-        return fragment;
+    public EntryFragment(SQLiteDatabase database){
+        this.database = database;
     }
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -56,15 +56,15 @@ public class EntryFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        TextView already_have = getView().findViewById(R.id.entry_text_profile_already_exist);
+
         Button signup = getView().findViewById(R.id.entry_signup_button);
-        Button signin = getView().findViewById(R.id.entry_signin_button);
+
         Button local = getView().findViewById(R.id.entry_local_profile_button);
         ImageView local_info = getView().findViewById(R.id.entry_local_profile_info_button);
 
-        already_have.setVisibility(View.INVISIBLE);
+
         signup.setVisibility(View.INVISIBLE);
-        signin.setVisibility(View.INVISIBLE);
+
         local.setVisibility(View.INVISIBLE);
         local_info.setVisibility(View.INVISIBLE);
 
@@ -78,12 +78,31 @@ public class EntryFragment extends Fragment {
         button.setVisibility(View.INVISIBLE);
 
 
-        Animation animation_hello = AnimationUtils.loadAnimation(getContext(), R.anim.text_anim_rise_fade);
-        Animation animation_permissions = AnimationUtils.loadAnimation(getContext(), R.anim.text_anim_rise);
-        Animation animation_permission_fade = AnimationUtils.loadAnimation(getContext(), R.anim.text_anim_fade);
-        Animation animation_profile = AnimationUtils.loadAnimation(getContext(), R.anim.text_anim_rise);
+        Animation animation_hello = AnimationUtils.loadAnimation(getActivity().getApplicationContext(), R.anim.text_anim_rise);
+        Animation animation_hello_fade = AnimationUtils.loadAnimation(getActivity().getApplicationContext(), R.anim.text_anim_fade);
+        Animation animation_permissions = AnimationUtils.loadAnimation(getActivity().getApplicationContext(), R.anim.text_anim_rise);
+        Animation animation_permission_fade = AnimationUtils.loadAnimation(getActivity().getApplicationContext(), R.anim.text_anim_fade);
+        Animation animation_profile = AnimationUtils.loadAnimation(getActivity().getApplicationContext(), R.anim.text_anim_rise);
 
         animation_hello.setAnimationListener(new Animation.AnimationListener() {
+            @Override
+            public void onAnimationStart(Animation animation) {
+                hello.setVisibility(View.VISIBLE);
+            }
+
+            @Override
+            public void onAnimationEnd(Animation animation) {
+
+                hello.clearAnimation();
+                hello.startAnimation(animation_hello_fade);
+            }
+
+            @Override
+            public void onAnimationRepeat(Animation animation) {
+
+            }
+        });
+        animation_hello_fade.setAnimationListener(new Animation.AnimationListener() {
             @Override
             public void onAnimationStart(Animation animation) {
                 hello.setVisibility(View.VISIBLE);
@@ -110,7 +129,6 @@ public class EntryFragment extends Fragment {
 
             @Override
             public void onAnimationEnd(Animation animation) {
-                button.setText("Хорошо");
                 button.setVisibility(View.VISIBLE);
                 permission.clearAnimation();
             }
@@ -133,9 +151,9 @@ public class EntryFragment extends Fragment {
                 profile.clearAnimation();
                 signup.setVisibility(View.VISIBLE);
                 local.setVisibility(View.VISIBLE);
-                signin.setVisibility(View.VISIBLE);
+
                 local_info.setVisibility(View.VISIBLE);
-                already_have.setVisibility(View.VISIBLE);
+
 
             }
 
@@ -175,11 +193,42 @@ public class EntryFragment extends Fragment {
         local_info.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(getActivity(), "Вы сможете пользоваться приложением, но не сможете добавить друзей," +
-                                " поделиться с ними местами, а данные будут храниться только на Вашем устройстве",
-                        Toast.LENGTH_LONG).show();
+                        /*
+                        Toast.makeText(getApplicationContext(), "Вы сможете пользоваться приложением, но не сможете добавить друзей," +
+                                        " поделиться с ними местами, а данные будут храниться только на Вашем устройстве",
+                                Toast.LENGTH_LONG).show();
+                        */
+                OneButtonDialog infoDialog = new OneButtonDialog("Локальный профиль",
+                        "Вы сможете пользоваться приложением, но не сможете добавить друзей," +
+                                " поделиться с ними местами, а данные будут храниться только на Вашем устройстве.",
+                        "Понятно", R.drawable.info);
+                FragmentManager manager = getActivity().getSupportFragmentManager();
+                FragmentTransaction fragmentTransaction = manager.beginTransaction();
+                infoDialog.show(fragmentTransaction, "info_local");
             }
         });
+
+        local.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ContentValues cv = new ContentValues();
+                cv.put("first", 1);
+                database.insert("init", null, cv);
+                database.close();
+                Intent intent = getActivity().getIntent();
+                getActivity().finish();
+                startActivity(intent);
+            }
+        });
+
+        signup.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ((MainActivity)getActivity()).openSignin();
+            }
+        });
+
+
 
         hello.startAnimation(animation_hello);
 
