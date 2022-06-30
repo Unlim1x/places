@@ -25,6 +25,8 @@ import com.example.places.R;
 import com.example.places.databinding.FragmentEntryBinding;
 import com.example.places.ui.dialogs.OneButtonDialog;
 
+import java.time.LocalDateTime;
+
 
 public class EntryFragment extends Fragment {
 
@@ -214,7 +216,16 @@ public class EntryFragment extends Fragment {
                 ContentValues cv = new ContentValues();
                 cv.put("first", 1);
                 database.insert("init", null, cv);
-                database.close();
+                //database.close();
+                int a = LocalDateTime.now().hashCode();
+                a = Math.abs(a);
+                String username = "User_" + String.valueOf(a);
+                ContentValues pcv = new ContentValues();
+                pcv.put("username", username);
+                pcv.put("phone", "null");
+                pcv.put("type", 0);
+                pcv.put("loggedout", 0);
+                database.insert("profiles", null, pcv);
                 Intent intent = getActivity().getIntent();
                 getActivity().finish();
                 startActivity(intent);

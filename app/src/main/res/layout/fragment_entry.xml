@@ -23,7 +23,8 @@
             android:text="Привет!"
             android:textAlignment="center"
             android:textColor="@color/Black"
-            android:textSize="20dp" />
+            android:textSize="22dp" />
+
         <TextView
             android:id="@+id/entry_text_permission"
             android:layout_width="wrap_content"
@@ -31,12 +32,12 @@
             android:layout_below="@id/entry_image"
             android:layout_centerInParent="true"
             android:layout_marginLeft="8dp"
-            android:layout_marginRight="8dp"
             android:layout_marginTop="16dp"
+            android:layout_marginRight="8dp"
             android:text="Сейчас мы попросим доступ к геолокации"
             android:textAlignment="center"
             android:textColor="@color/Black"
-            android:textSize="20dp" />
+            android:textSize="22dp" />
 
         <TextView
             android:id="@+id/entry_text_profile"
@@ -45,12 +46,12 @@
             android:layout_below="@id/entry_image"
             android:layout_centerInParent="true"
             android:layout_marginLeft="8dp"
-            android:layout_marginRight="8dp"
             android:layout_marginTop="16dp"
+            android:layout_marginRight="8dp"
             android:text="Теперь необходимо авторизоваться"
-            android:textColor="@color/Black"
             android:textAlignment="center"
-            android:textSize="20dp" />
+            android:textColor="@color/Black"
+            android:textSize="22dp" />
 
         <ImageView
             android:id="@+id/entry_image"
@@ -67,11 +68,11 @@
             android:id="@+id/entry_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="@drawable/button_shape"
-            android:text="Хорошо"
-            android:layout_below="@+id/entry_text_hello"
+
             android:layout_centerInParent="true"
-            android:layout_marginTop="48dp"/>
+            android:layout_marginTop="48dp"
+            android:background="@drawable/button_shape"
+            android:text="Хорошо" />
 
         <Button
             android:id="@+id/entry_signup_button"

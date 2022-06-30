@@ -78,7 +78,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         database = openOrCreateDatabase("myplacesx.db", MODE_PRIVATE, null);
         database.execSQL("CREATE TABLE IF NOT EXISTS markers (latitude REAL, longitude REAL, title TEXT, snippet TEXT, drag INT, color REAL)");
-        database.execSQL("CREATE TABLE IF NOT EXISTS profiles (username TEXT, password TEXT, type INT, loggedout INT)");
+        database.execSQL("CREATE TABLE IF NOT EXISTS profiles (username TEXT, phone TEXT, type INT, loggedout INT)");
         database.execSQL("CREATE TABLE IF NOT EXISTS init (first INT)");
 
 
@@ -106,26 +106,15 @@ public class MainActivity extends AppCompatActivity {
                 tabs.setupWithViewPager(viewPager);
 
                 bundle = new Bundle();
-                Cursor cursor = database.rawQuery("SELECT COUNT (*) FROM profiles", null);
-                if (cursor.moveToNext())
-                    if (cursor.getInt(0) == 0){
-                        int a = LocalDateTime.now().hashCode();
-                        a = Math.abs(a);
-                        String username = "User_" + String.valueOf(a);
-                        String password = "default";
-                        ContentValues cv = new ContentValues();
-                        cv.put("username", username);
-                        cv.put("password", password);
-                        cv.put("type", 0);
-                        cv.put("loggedout", 0);
-                        database.insert("profiles", null, cv);
-                        bundle.putString("username", username);
-                    }
-                    else if(cursor.getInt(0) == 1){
-                        cursor = database.rawQuery("SELECT * FROM profiles", null);
-                        cursor.moveToNext();
+                Cursor cursor = database.rawQuery("SELECT * FROM profiles", null);
+                while (cursor.moveToNext())
+                    if (cursor.getInt(3) == 0){
                         bundle.putString("username", cursor.getString(0));
+                        bundle.putByte("profile_type", (byte)cursor.getInt(2));
+                        Log.i("Profile type", ""+bundle.getByte("profile_type"));
+                        break;
                     }
+
                 cursor.close();
             }
     }
