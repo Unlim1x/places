@@ -32,7 +32,7 @@ public class SectionsPagerAdapter extends FragmentPagerAdapter {
         if (position == 0)
             return PlacesFragment.newInstance(position + 1, mContext);
         if (position == 1)
-            return TrackerFragment.newInstance(position +1);
+            return TrackerFragment.newInstance(position +1, mContext);
         if(position == 2)
             return ProfileFragment.newInstance(position +1);
         return PlaceholderFragment.newInstance(position + 1);

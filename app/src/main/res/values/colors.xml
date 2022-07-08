@@ -154,4 +154,9 @@
     <color name="SlateGrey">#708090</color>
     <color name="DarkSlateGray">#2F4F4F</color>
     <color name="DarkSlateGrey">#2F4F4F</color>
+    <color name="VeryDarkGrey">#363636</color>
+    <color name="LightGreyBlack">#4f4f4f</color>
+    <color name="GreyBlack">#1c1c1c</color>
+    <color name="BrownBlack">#212121</color>
+    <color name="AlmostBlack">#282828</color>
 </resources>

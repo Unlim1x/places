@@ -49,13 +49,6 @@ import java.util.TimerTask;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
-import ru.dezhik.sms.sender.SenderService;
-import ru.dezhik.sms.sender.SenderServiceConfiguration;
-import ru.dezhik.sms.sender.SenderServiceConfigurationBuilder;
-import ru.dezhik.sms.sender.api.InvocationStatus;
-import ru.dezhik.sms.sender.api.smsru.SMSRuResponseStatus;
-import ru.dezhik.sms.sender.api.smsru.cost.SMSRuCostRequest;
-import ru.dezhik.sms.sender.api.smsru.cost.SMSRuCostResponse;
 
 
 public class SignupFragment extends Fragment {
@@ -68,11 +61,14 @@ public class SignupFragment extends Fragment {
     TextView plusseven;
     Button change_number;
     Button resend_code;
+    Timer buttonTimer;
+    Timer textTimer;
     boolean code_accepted = false;
     int generated_code;
     byte time = 60;
     String phone_number_db;
-    private static final String server_host = "192.168.0.163";
+    private static final String server_host_in = "192.168.0.163";
+    private static final String server_host = "185.102.8.27";
     public static final int server_port = 25565;
 
     public SignupFragment(SQLiteDatabase database){
@@ -214,12 +210,19 @@ public class SignupFragment extends Fragment {
                         pcv.put("type", 1);
                         pcv.put("loggedout", 0);
                         database.insert("profiles", null, pcv);
+
+                        if (buttonTimer != null)
+                            buttonTimer.cancel();
+
+                        if (textTimer != null)
+                            textTimer.cancel();
+
                         Intent intent = getActivity().getIntent();
                         getActivity().finish();
                         startActivity(intent);
                     }
                     else{
-
+                        progressBar.setVisibility(View.INVISIBLE);
                         incorrect_code.setVisibility(View.VISIBLE);
                     }
                 } catch (ExecutionException e) {
@@ -242,6 +245,7 @@ public class SignupFragment extends Fragment {
     private void resendCodeGeneratorButton(){
         Timer myTimer;
         myTimer = new Timer();
+        buttonTimer = myTimer;
 
         myTimer.schedule(new TimerTask() {
             public void run() {
@@ -252,12 +256,13 @@ public class SignupFragment extends Fragment {
     private void resendCodeGeneratorText(){
         Timer myTimer;
         myTimer = new Timer();
-
+        textTimer = myTimer;
         myTimer.schedule(new TimerTask() {
             public void run() {
                 if (time >=0)
                 timerTickText();
                 else{
+                    myTimer.cancel();
                     time = 60;
                     return;
                 }
@@ -283,12 +288,14 @@ public class SignupFragment extends Fragment {
         }
     };
 
+
+
     private void sendPhone(String phone){
        //TODO: Надо какой-то апи найти для отправки смс. Я пока не понимаю как.
         CompletableFuture<Void> voidCompletableFuture;
         voidCompletableFuture = CompletableFuture.runAsync(()->{
             try {
-                Socket server = new Socket(server_host, server_port);
+                Socket server = new Socket(server_host_in, server_port);
                 DataOutputStream dataOutputStream = new DataOutputStream(server.getOutputStream());
                 dataOutputStream.writeUTF("phone");
                 dataOutputStream.writeUTF(phone);
@@ -305,7 +312,7 @@ public class SignupFragment extends Fragment {
         CompletableFuture<Boolean> supplier;
         supplier = CompletableFuture.supplyAsync(()->{
             try {
-                Socket server = new Socket(server_host, server_port);
+                Socket server = new Socket(server_host_in, server_port);
                 DataOutputStream dataOutputStream = new DataOutputStream(server.getOutputStream());
                 DataInputStream dataInputStream = new DataInputStream(server.getInputStream());
                 dataOutputStream.writeUTF("code");

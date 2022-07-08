@@ -28,4 +28,39 @@
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
 
+    <string-array name="update_frequency_rus">
+        <item>2 минуты</item>
+        <item>5 минут</item>
+        <item>10 минут</item>
+    </string-array>
+    <string-array name="google_map_styles">
+        <item>Стилизованная</item>
+        <item>Классическая</item>
+        <item>Grayscale</item>
+    </string-array>
+
+    <string name="map_id">cc619ae2d6b79740</string>
+    <string name="title_activity_settings">Настройки</string>
+
+    <!-- Preference Titles -->
+    <string name="places_header">Места</string>
+    <string name="tracker_header">Трекер</string>
+    <string name="profile_header">Профиль</string>
+    <string name="common_header">Общее</string>
+
+    <!-- Common Preferences -->
+    <string name="app_theme">Тема приложения</string>
+    <string name="sound_notification">Звук уведомлений</string>
+    <!-- Sync Preferences -->
+    <string name="sync_title">Sync email periodically</string>
+    <string name="attachment_title">Download incoming attachments</string>
+    <string name="attachment_summary_on">Automatically download attachments for incoming emails
+    </string>
+    <string name="attachment_summary_off">Only download attachments when manually requested</string>
+    <string name="places_map_style">Стиль карты</string>
+    <string name="tracker_map_style">Стиль карты</string>
+    <string name="tracker_interval">Частота обновления</string>
+    <string name="tracker_width">Толщина линии</string>
+    <string name="open_system_geo">Открыть системные настройки</string>
+
 </resources>

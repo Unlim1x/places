@@ -12,6 +12,7 @@
         android:layout_height="match_parent">
 
         <TextView
+            android:textAppearance="@style/TextAppearance.AppCompat.Body1"
             android:id="@+id/entry_text_hello"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -22,7 +23,6 @@
             android:layout_marginTop="16dp"
             android:text="Привет!"
             android:textAlignment="center"
-            android:textColor="@color/Black"
             android:textSize="22dp" />
 
         <TextView
@@ -36,7 +36,7 @@
             android:layout_marginRight="8dp"
             android:text="Сейчас мы попросим доступ к геолокации"
             android:textAlignment="center"
-            android:textColor="@color/Black"
+            android:textAppearance="@style/TextAppearance.AppCompat.Body1"
             android:textSize="22dp" />
 
         <TextView
@@ -50,7 +50,7 @@
             android:layout_marginRight="8dp"
             android:text="Теперь необходимо авторизоваться"
             android:textAlignment="center"
-            android:textColor="@color/Black"
+            android:textAppearance="@style/TextAppearance.AppCompat.Body1"
             android:textSize="22dp" />
 
         <ImageView
@@ -104,7 +104,7 @@
             android:layout_centerInParent="true"
             android:layout_marginLeft="16dp"
             android:layout_toRightOf="@+id/entry_local_profile_button"
-            android:src="@drawable/info" />
+            android:src="?attr/actionInfoIcon"/>
 
 
     </RelativeLayout>

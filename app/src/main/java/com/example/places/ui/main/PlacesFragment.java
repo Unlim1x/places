@@ -3,6 +3,7 @@ package com.example.places.ui.main;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -45,6 +46,7 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -70,7 +72,7 @@ public class PlacesFragment extends Fragment {
     private BottomSheetBehavior bottomSheetBehavior;
     private int marker_counter = 0;
     private static final String TAG = MapsActivity.class.getSimpleName();
-    private GoogleMap map;
+    public GoogleMap map_observer;
     private CameraPosition cameraPosition;
     // The entry point to the Places API.
     private PlacesClient placesClient;
@@ -88,7 +90,7 @@ public class PlacesFragment extends Fragment {
     // The geographical location where the device is currently located. That is, the last-known
     // location retrieved by the Fused Location Provider.
     private Location lastKnownLocation;
-
+    SharedPreferences mSettings;
     // Keys for storing activity state.
     // [START maps_current_place_state_keys]
     private static final String KEY_CAMERA_POSITION = "camera_position";
@@ -104,7 +106,8 @@ public class PlacesFragment extends Fragment {
 
 
     private FragmentPlacesBinding binding;
-    private PlacesFragment(Context context){
+    public PlacesFragment(){}
+    public PlacesFragment(Context context){
         mContext = context;
     }
 
@@ -120,13 +123,14 @@ public class PlacesFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        mSettings = getActivity().getSharedPreferences("s1paraX", Context.MODE_PRIVATE);
     }
 
     @Override
     public View onCreateView(
             @NonNull LayoutInflater inflater, ViewGroup container,
             Bundle savedInstanceState) {
+        mContext = getContext();
         View root;
         binding = FragmentPlacesBinding.inflate(inflater, container, false);
         root = binding.getRoot();
@@ -155,6 +159,16 @@ public class PlacesFragment extends Fragment {
     private OnMapReadyCallback callback = new OnMapReadyCallback() {
         @Override
         public void onMapReady(GoogleMap map) {
+            if(mSettings.contains("map_style")){
+                String style = mSettings.getString("map_style","");
+                if (style.equals("grayscale"))
+                    map.setMapStyle(MapStyleOptions.loadRawResourceStyle(getContext(), R.raw.grayscale));
+                if (style.equals("classic"))
+                    map.setMapStyle(MapStyleOptions.loadRawResourceStyle(getContext(), R.raw.standard));
+                if (style.equals("night"))
+                    map.setMapStyle(MapStyleOptions.loadRawResourceStyle(getContext(), R.raw.night));
+            }
+
 
             map.setOnMapLongClickListener(new OnMapLongClickListener() {
                 @Override

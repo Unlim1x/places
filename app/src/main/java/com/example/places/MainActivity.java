@@ -1,11 +1,16 @@
 package com.example.places;
 
 import android.app.Activity;
+import android.content.BroadcastReceiver;
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.location.Geocoder;
 import android.location.Location;
 import android.os.Bundle;
 
@@ -19,6 +24,8 @@ import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.MapsInitializer;
+
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
@@ -32,11 +39,13 @@ import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.tabs.TabLayout;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatDelegate;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.preference.PreferenceManager;
 import androidx.viewpager.widget.ViewPager;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -55,10 +64,13 @@ import android.widget.Toast;
 import com.example.places.ui.main.SectionsPagerAdapter;
 import com.example.places.databinding.ActivityMainBinding;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Locale;
 
-public class MainActivity extends AppCompatActivity {
+
+public class MainActivity extends AppCompatActivity  {
 
     private ActivityMainBinding binding;
     private FragmentMainBinding fbinding;
@@ -67,19 +79,35 @@ public class MainActivity extends AppCompatActivity {
     private byte profile_type = 0; // 0 = local_default, 1 = signed_in;
     private Bundle bundle;
     SQLiteDatabase database;
-
+    SharedPreferences mSettings;
     private boolean locationPermissionGranted;
-    private static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1;
 
+    private static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        mSettings = getSharedPreferences("s1paraX", Context.MODE_PRIVATE);
+        boolean light_theme = mSettings.getBoolean("light_theme", false);
+        boolean dark_theme = mSettings.getBoolean("dark_theme", false);
+        boolean system_theme = mSettings.getBoolean("system_theme", false);
+
+        if (light_theme)
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+        else if(dark_theme)
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+        else if(system_theme)
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
+
         database = openOrCreateDatabase("myplacesx.db", MODE_PRIVATE, null);
         database.execSQL("CREATE TABLE IF NOT EXISTS markers (latitude REAL, longitude REAL, title TEXT, snippet TEXT, drag INT, color REAL)");
         database.execSQL("CREATE TABLE IF NOT EXISTS profiles (username TEXT, phone TEXT, type INT, loggedout INT)");
         database.execSQL("CREATE TABLE IF NOT EXISTS init (first INT)");
+        database.execSQL("CREATE TABLE IF NOT EXISTS tracker (latitude REAL, longitude REAL, title TEXT, snippet TEXT, color REAL)");
+        database.execSQL("CREATE TABLE IF NOT EXISTS service (status INT)");
+
 
 
         // Here we define if application has been already used
@@ -119,6 +147,9 @@ public class MainActivity extends AppCompatActivity {
             }
     }
 
+
+
+
     public void openSignin(){
 
         getSupportFragmentManager().beginTransaction()
@@ -127,11 +158,19 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
-    protected void onStop() {
+    protected void onDestroy() {
         // call the superclass method first
-        super.onStop();
         database.close();
+        super.onDestroy();
     }
+    @Override
+    protected void onRestart() {
+
+        super.onRestart();
+        this.recreate();
+    }
+
+
 
     public byte profileType(){
         return profile_type;
@@ -156,6 +195,7 @@ public class MainActivity extends AppCompatActivity {
                     new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION},
                     PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION);
         }
+
     }
     // [END maps_current_place_location_permission]
 

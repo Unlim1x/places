@@ -1,5 +1,7 @@
 package com.example.places.ui.main;
 
+import android.content.Context;
+import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -11,14 +13,17 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.places.MainActivity;
 import com.example.places.R;
+import com.example.places.SettingsActivity;
 import com.example.places.databinding.FragmentPlacesBinding;
 import com.example.places.databinding.FragmentProfileBinding;
 
@@ -33,7 +38,8 @@ public class ProfileFragment extends Fragment {
 
     FragmentProfileBinding binding;
     private static final String ARG_PARAM1 = "param1";
-
+    SQLiteDatabase database;
+    Context mContext;
 
     // TODO: Rename and change types of parameters
     private String mParam1;
@@ -67,12 +73,14 @@ public class ProfileFragment extends Fragment {
         if (getArguments() != null) {
             mParam1 = getArguments().getString(ARG_PARAM1);
         }
+        mContext = getActivity().getApplicationContext();
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
+        mContext = getContext();
         View root;
         binding = FragmentProfileBinding.inflate(inflater, container, false);
         root = binding.getRoot();
@@ -82,9 +90,33 @@ public class ProfileFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
+        database = ((MainActivity)getActivity()).getDataBase();
         TextView username = getView().findViewById(R.id.username);
         username.setText(((MainActivity)getActivity()).getUsername());
+
+        Button delete_tracker_data = binding.deleteTrackerData;
+        delete_tracker_data.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.i("deleting",""+database.delete("tracker", null, null));
+            }
+        });
+
+        binding.deletePlacesData.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.i("deleting",""+database.delete("markers", null, null));
+            }
+        });
+
+        Button settings_button = binding.settingsButton;
+
+        settings_button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(mContext, SettingsActivity.class));
+            }
+        });
 
 
     }
