@@ -156,7 +156,7 @@ public class TrackerFragment extends Fragment{
                         //todo:включить трекер
                         fab.setImageResource(R.drawable.stop);
                         helper_fab = true;
-                        OneTimeWorkRequest geoWorkRequest = new OneTimeWorkRequest.Builder(GeoWorker.class).addTag("geoTask").build(); //1, TimeUnit.MINUTES
+                        PeriodicWorkRequest geoWorkRequest = new PeriodicWorkRequest.Builder(GeoWorker.class, 15, TimeUnit.MINUTES, 5, TimeUnit.MINUTES).addTag("geoTask").build(); //1, TimeUnit.MINUTES
                         WorkManager.getInstance(getContext()).enqueue(geoWorkRequest);
                     }
                 }

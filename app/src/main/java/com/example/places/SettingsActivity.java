@@ -1,17 +1,24 @@
 package com.example.places;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.Settings;
+import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.EditText;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.preference.EditTextPreference;
@@ -29,6 +36,7 @@ public class SettingsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         mSettings = getSharedPreferences("s1paraX", Context.MODE_PRIVATE);
         editor = mSettings.edit();
+
         setContentView(R.layout.settings_activity);
         if (savedInstanceState == null) {
             getSupportFragmentManager()
@@ -44,7 +52,7 @@ public class SettingsActivity extends AppCompatActivity {
     }
 
     public static class SettingsFragment extends PreferenceFragmentCompat {
-
+        SQLiteDatabase database;
         @Override
         public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
             setPreferencesFromResource(R.xml.root_preferences, rootKey);
@@ -53,7 +61,7 @@ public class SettingsActivity extends AppCompatActivity {
         @Override
         public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
             super.onViewCreated(view, savedInstanceState);
-
+            database = getContext().openOrCreateDatabase("myplacesx.db", MODE_PRIVATE, null);
             ListPreference theme = getPreferenceManager().findPreference("theme");
             if (AppCompatDelegate.getDefaultNightMode() == AppCompatDelegate.MODE_NIGHT_NO)
                 theme.setValueIndex(1);
@@ -152,6 +160,33 @@ public class SettingsActivity extends AppCompatActivity {
                 }
             });
 
+            ListPreference tracker_freq = getPreferenceManager().findPreference("tracker_update_keys");
+            tracker_width.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+                @Override
+                public boolean onPreferenceChange(Preference preference, Object newValue) {
+                    SharedPreferences.Editor editor = getActivity().getSharedPreferences("s1paraX", Context.MODE_PRIVATE).edit();
+                    int interval = 0;
+                    switch((String)newValue){
+                        case "two":
+                            interval = 2;
+                            break;
+                        case "five":
+                            interval = 5;
+                            break;
+                        case "ten":
+                            interval = 10;
+                            break;
+                        default:
+                            interval = 2;
+                            break;
+                    }
+                    editor.putInt("tracker_freq", interval);
+                    editor.apply();
+                    tracker_freq.setValue(newValue.toString());
+                    return false;
+                }
+            });
+
             PreferenceScreen GEO =  getPreferenceManager().findPreference("open_geo_system");
 
             GEO.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
@@ -164,6 +199,76 @@ public class SettingsActivity extends AppCompatActivity {
                     return false;
                 }
             });
+
+            PreferenceScreen clear_places =  getPreferenceManager().findPreference("clear_places");
+
+            clear_places.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+
+                @Override
+                public boolean onPreferenceClick(Preference preference) {
+                    Log.i("Zaebal", "YA TUT!!!!!!!!!!!!");
+                    LayoutInflater li = LayoutInflater.from(getContext());
+                    View inputDialogView = li.inflate(R.layout.clearing_dialog, null);
+                    AlertDialog.Builder aDialogBuilder = new AlertDialog.Builder(getContext());
+                    aDialogBuilder.setView(inputDialogView);
+                    aDialogBuilder
+                            .setCancelable(false)
+                            .setPositiveButton("Очистить",
+                                    new DialogInterface.OnClickListener() {
+                                        public void onClick(DialogInterface dialog,int id) {
+                                            Log.i("deleting",""+ database.delete("markers", null, null));
+                                        }
+                                    })
+                            .setNegativeButton("Отменить",
+                                    new DialogInterface.OnClickListener() {
+                                        public void onClick(DialogInterface dialog,int id) {
+                                            dialog.cancel();
+                                        }
+                                    });
+                    AlertDialog inputDialog = aDialogBuilder.create();
+                    TextView header = inputDialogView.findViewById(R.id.clearing_dialog_header);
+                    header.setText("Очистка истории мест");
+                    inputDialog.show();
+
+                    return true;
+                }
+            });
+
+            PreferenceScreen clear_tracker =  getPreferenceManager().findPreference("clear_tracker");
+
+            clear_tracker.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+
+                @Override
+                public boolean onPreferenceClick(Preference preference) {
+
+                    LayoutInflater li = LayoutInflater.from(getContext());
+                    View inputDialogView = li.inflate(R.layout.clearing_dialog, null);
+                    AlertDialog.Builder aDialogBuilder = new AlertDialog.Builder(getContext());
+                    aDialogBuilder.setView(inputDialogView);
+                    aDialogBuilder
+                            .setCancelable(false)
+                            .setPositiveButton("Очистить",
+                                    new DialogInterface.OnClickListener() {
+                                        public void onClick(DialogInterface dialog,int id) {
+                                            Log.i("deleting",""+ database.delete("tracker", null, null));
+                                        }
+                                    })
+                            .setNegativeButton("Отменить",
+                                    new DialogInterface.OnClickListener() {
+                                        public void onClick(DialogInterface dialog,int id) {
+                                            dialog.cancel();
+                                        }
+                                    });
+                    AlertDialog inputDialog = aDialogBuilder.create();
+                    TextView header = inputDialogView.findViewById(R.id.clearing_dialog_header);
+                    header.setText("Очистка истории трекера");
+                    inputDialog.show();
+
+                    return true;
+                }
+            });
+
+
         }
     }
 
@@ -176,5 +281,6 @@ public class SettingsActivity extends AppCompatActivity {
         }
         return super.onOptionsItemSelected(item);
     }
+
 
 }

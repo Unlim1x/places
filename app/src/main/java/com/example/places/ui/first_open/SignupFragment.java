@@ -24,6 +24,7 @@ import androidx.fragment.app.FragmentTransaction;
 
 import com.example.places.MainActivity;
 import com.example.places.R;
+import com.example.places.SigninActivity;
 import com.example.places.databinding.FragmentSignupBinding;
 import com.example.places.ui.dialogs.OneButtonDialog;
 
@@ -67,18 +68,19 @@ public class SignupFragment extends Fragment {
     int generated_code;
     byte time = 60;
     String phone_number_db;
-    private static final String server_host_in = "192.168.0.163";
-    private static final String server_host = "185.102.8.27";
+    private static final String server_host_i = "192.168.0.163";
+    private static final String server_host_in = "185.102.8.27";
     public static final int server_port = 25565;
 
-    public SignupFragment(SQLiteDatabase database){
-        this.database = database;
+    public SignupFragment(){
     }
+
 
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        database = getActivity().openOrCreateDatabase("myplacesx.db", android.content.Context.MODE_PRIVATE, null);
     }
 
     @Override
@@ -205,6 +207,9 @@ public class SignupFragment extends Fragment {
                         database.insert("init", null, cv);
 
                         ContentValues pcv = new ContentValues();
+                        ContentValues upd = new ContentValues(); //Здесь обновляем локальный профиль
+                        upd.put("loggedout", 1);
+                        database.update("profiles", upd, "loggedout = 0",null);
                         pcv.put("username", phone_number_db);
                         pcv.put("phone", phone_number_db);
                         pcv.put("type", 1);
@@ -217,9 +222,9 @@ public class SignupFragment extends Fragment {
                         if (textTimer != null)
                             textTimer.cancel();
 
-                        Intent intent = getActivity().getIntent();
+                       // Intent intent = getActivity().getIntent();
                         getActivity().finish();
-                        startActivity(intent);
+                        startActivity(new Intent(getActivity(), MainActivity.class));
                     }
                     else{
                         progressBar.setVisibility(View.INVISIBLE);
@@ -237,7 +242,6 @@ public class SignupFragment extends Fragment {
                 }
             }
         });
-
 
 
     }

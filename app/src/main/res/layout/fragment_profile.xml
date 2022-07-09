@@ -33,31 +33,32 @@
 
             android:src="@drawable/user" />
         <Button
+            android:id="@+id/signin_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:layout_marginBottom="15dp"
+            android:visibility="invisible"
+            android:text="Войти" />
+
+        <Button
             android:id="@+id/settings_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_above="@+id/delete_places_data"
+            android:layout_above="@id/logout_button"
             android:layout_centerInParent="true"
             android:layout_marginBottom="15dp"
             android:text="Настройки" />
-
         <Button
-            android:id="@+id/delete_places_data"
+            android:id="@+id/logout_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_above="@+id/delete_tracker_data"
+            android:layout_alignParentBottom="true"
             android:layout_centerInParent="true"
             android:layout_marginBottom="15dp"
-            android:text="Очистить места" />
-        <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/delete_tracker_data"
-            android:layout_centerInParent="true"
-            android:layout_alignParentBottom="true"
-            android:layout_marginBottom="24dp"
-            android:text="Очистить трекер"
-            />
+            android:text="Выйти" />
+
+
 
     </RelativeLayout>
 

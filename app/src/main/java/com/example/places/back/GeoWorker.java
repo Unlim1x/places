@@ -58,8 +58,8 @@ public class GeoWorker extends Worker {
     @Override
     public Result doWork() {
         SharedPreferences mSettings = getApplicationContext().getSharedPreferences("s1paraX", Context.MODE_PRIVATE);
-
-        while(true) {
+        byte i =7;
+        while(i>0) {
 
             Log.i("Geo", "starts at" + LocalTime.now());
 
@@ -89,12 +89,11 @@ public class GeoWorker extends Worker {
                 }
             });
             try {
-                TimeUnit.MINUTES.sleep(2);
+                TimeUnit.MINUTES.sleep(mSettings.getInt("tracker_freq", 2));
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-            if(a == 3)
-                break;
+            i--;
         }
 
 

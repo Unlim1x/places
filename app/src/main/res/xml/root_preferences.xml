@@ -11,10 +11,10 @@
             app:title="@string/app_theme"
             app:useSimpleSummaryProvider="true" />
 
-        <SwitchPreferenceCompat
-            app:key="notify_sound"
-            app:title="@string/sound_notification"
-            app:defaultValue="true"/>
+        <PreferenceScreen
+            android:summary="Разрешите фоновую локацию"
+            android:title="@string/open_system_geo"
+            app:key="open_geo_system" />
 
     </PreferenceCategory>
 
@@ -27,6 +27,10 @@
             app:key="places_map_style"
             app:title="@string/places_map_style"
             app:useSimpleSummaryProvider="true" />
+        <PreferenceScreen
+            android:summary="@string/places_clear"
+            android:title="@string/clear_history"
+            app:key="clear_places" />
 
     </PreferenceCategory>
     <PreferenceCategory app:title="@string/tracker_header">
@@ -53,12 +57,10 @@
             app:key="tracker_width_keys"
             app:title="@string/tracker_width"
             app:useSimpleSummaryProvider="true" />
-
-
         <PreferenceScreen
-            android:summary="Разрешите локацию, чтобы трекер работал в фоне"
-            android:title="@string/open_system_geo"
-            app:key="open_geo_system" />
+            android:summary="@string/tracker_clear"
+            android:title="@string/clear_history"
+            app:key="clear_tracker" />
 
 
 

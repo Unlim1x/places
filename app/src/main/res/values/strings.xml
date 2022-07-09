@@ -41,7 +41,7 @@
 
     <string name="map_id">cc619ae2d6b79740</string>
     <string name="title_activity_settings">Настройки</string>
-
+    <string name="title_activity_signin">Авторизация</string>
     <!-- Preference Titles -->
     <string name="places_header">Места</string>
     <string name="tracker_header">Трекер</string>
@@ -62,5 +62,8 @@
     <string name="tracker_interval">Частота обновления</string>
     <string name="tracker_width">Толщина линии</string>
     <string name="open_system_geo">Открыть системные настройки</string>
+    <string name="clear_history">Очистить историю</string>
+    <string name="places_clear">Удалить все маркеры</string>
+    <string name="tracker_clear">Удалить все маршруты</string>
 
 </resources>

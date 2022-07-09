@@ -140,10 +140,12 @@ public class MainActivity extends AppCompatActivity  {
                         bundle.putString("username", cursor.getString(0));
                         bundle.putByte("profile_type", (byte)cursor.getInt(2));
                         Log.i("Profile type", ""+bundle.getByte("profile_type"));
+                        cursor.close();
                         break;
+
                     }
 
-                cursor.close();
+
             }
     }
 
@@ -153,7 +155,7 @@ public class MainActivity extends AppCompatActivity  {
     public void openSignin(){
 
         getSupportFragmentManager().beginTransaction()
-                .replace(R.id.container, new SignupFragment(database)) // or replace с теми же параметрами
+                .replace(R.id.container, new SignupFragment()) // or replace с теми же параметрами
                 .commit();
     }
 
@@ -172,8 +174,9 @@ public class MainActivity extends AppCompatActivity  {
 
 
 
+
     public byte profileType(){
-        return profile_type;
+        return bundle.getByte("profile_type");
     }
 
     public SQLiteDatabase getDataBase(){
