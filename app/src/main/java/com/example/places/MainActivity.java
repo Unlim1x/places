@@ -17,6 +17,10 @@ import android.os.Bundle;
 import com.example.places.databinding.FragmentEntryBinding;
 import com.example.places.databinding.FragmentMainBinding;
 import com.example.places.databinding.FragmentSignupBinding;
+import com.example.places.room.daos.InitAppDao;
+import com.example.places.room.daos.ProfileDao;
+import com.example.places.room.database.PlacesDatabase;
+import com.example.places.room.entities.Profile;
 import com.example.places.ui.dialogs.OneButtonDialog;
 import com.example.places.ui.first_open.EntryFragment;
 import com.example.places.ui.first_open.SignupFragment;
@@ -66,6 +70,7 @@ import com.example.places.databinding.ActivityMainBinding;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 
@@ -78,7 +83,10 @@ public class MainActivity extends AppCompatActivity  {
 
     private byte profile_type = 0; // 0 = local_default, 1 = signed_in;
     private Bundle bundle;
-    SQLiteDatabase database;
+    PlacesDatabase database;
+    InitAppDao initAppDao;
+    ProfileDao profileDao;
+
     SharedPreferences mSettings;
     private boolean locationPermissionGranted;
 
@@ -101,30 +109,27 @@ public class MainActivity extends AppCompatActivity  {
         else if(system_theme)
             AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
 
-        database = openOrCreateDatabase("myplacesx.db", MODE_PRIVATE, null);
-        database.execSQL("CREATE TABLE IF NOT EXISTS markers (latitude REAL, longitude REAL, title TEXT, snippet TEXT, drag INT, color REAL)");
-        database.execSQL("CREATE TABLE IF NOT EXISTS profiles (username TEXT, phone TEXT, type INT, loggedout INT)");
-        database.execSQL("CREATE TABLE IF NOT EXISTS init (first INT)");
-        database.execSQL("CREATE TABLE IF NOT EXISTS tracker (latitude REAL, longitude REAL, title TEXT, snippet TEXT, color REAL)");
-        database.execSQL("CREATE TABLE IF NOT EXISTS service (status INT)");
 
+
+        database = App.getInstance().getDatabase();
+        initAppDao =database.initAppDao();
+        profileDao = database.profileDao();
 
 
         // Here we define if application has been already used
         //If not, we have to show Entry fragment
         //else goes on
-        Cursor cursor1 = database.rawQuery("SELECT COUNT (*) FROM init", null);
-        if (cursor1.moveToNext())
-            if (cursor1.getInt(0) == 0){
-                cursor1.close();
+        int has_application_been_used_and_entered = initAppDao.getInit();
+
+            if (has_application_been_used_and_entered == 0){
                 fbinding = FragmentMainBinding.inflate(getLayoutInflater());
                 setContentView(fbinding.getRoot());
                 getSupportFragmentManager().beginTransaction()
-                        .add(R.id.container, new EntryFragment(database)) // or replace с теми же параметрами
+                        .add(R.id.container, new EntryFragment()) // or replace с теми же параметрами
                         .commit();
 
             }
-        else{
+            else {
                 binding = ActivityMainBinding.inflate(getLayoutInflater());
                 setContentView(binding.getRoot());
                 SectionsPagerAdapter sectionsPagerAdapter = new SectionsPagerAdapter(this, getSupportFragmentManager());
@@ -134,20 +139,37 @@ public class MainActivity extends AppCompatActivity  {
                 tabs.setupWithViewPager(viewPager);
 
                 bundle = new Bundle();
-                Cursor cursor = database.rawQuery("SELECT * FROM profiles", null);
-                while (cursor.moveToNext())
-                    if (cursor.getInt(3) == 0){
-                        bundle.putString("username", cursor.getString(0));
-                        bundle.putByte("profile_type", (byte)cursor.getInt(2));
-                        Log.i("Profile type", ""+bundle.getByte("profile_type"));
-                        cursor.close();
-                        break;
 
+                List<Profile> profiles = profileDao.getAll();
+                Iterator<Profile> profileIterator = profiles.iterator();
+                Profile temp_for_def = new Profile();
+                boolean found = false; //Если нашли профиль, который залогинен (logged out == 0)
+                while (profileIterator.hasNext()) {
+                    Profile profile = profileIterator.next();
+                    if (profile.loggedout == 0) {
+                        bundle.putString("username", profile.username);
+                        bundle.putByte("profile_type", (byte) profile.type);
+                        Log.i("Profile type", "" + bundle.getByte("profile_type"));
+                        found = true;
                     }
+                    if (profile.type == 0)
+                        temp_for_def = profile;
+                }
+                if (found == false) {
+                    bundle.putString("username", temp_for_def.username);
+                    bundle.putByte("profile_type", (byte) temp_for_def.type);
+                    Log.i("Profile type", "" + bundle.getByte("profile_type"));
+                    found = true;
+                    temp_for_def.loggedout = 0;
+                    profileDao.update(temp_for_def);
+                }
+            }
 
 
             }
-    }
+
+
+
 
 
 
@@ -162,7 +184,7 @@ public class MainActivity extends AppCompatActivity  {
     @Override
     protected void onDestroy() {
         // call the superclass method first
-        database.close();
+       // database.close();
         super.onDestroy();
     }
     @Override
@@ -179,9 +201,7 @@ public class MainActivity extends AppCompatActivity  {
         return bundle.getByte("profile_type");
     }
 
-    public SQLiteDatabase getDataBase(){
-        return database;
-    }
+
 
     public void getLocationPermission() {
         /*

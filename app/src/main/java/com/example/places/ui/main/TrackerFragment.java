@@ -21,11 +21,15 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RelativeLayout;
 
+import com.example.places.App;
 import com.example.places.MainActivity;
 import com.example.places.MapsActivity;
 import com.example.places.R;
 import com.example.places.back.GeoWorker;
 import com.example.places.databinding.FragmentTrackerBinding;
+import com.example.places.room.daos.TrackerDao;
+import com.example.places.room.database.PlacesDatabase;
+import com.example.places.room.entities.Tracker;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -48,6 +52,8 @@ import com.google.android.libraries.places.api.net.PlacesClient;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.sql.ResultSet;
+import java.util.Iterator;
+import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
@@ -64,7 +70,9 @@ public class TrackerFragment extends Fragment{
     private static final String TAG = MapsActivity.class.getSimpleName();
     FragmentTrackerBinding binding;
     private static final String ARG_PARAM1 = "param1";
-    private SQLiteDatabase database;
+    private PlacesDatabase database;
+    private TrackerDao trackerDao;
+
     private final LatLng defaultLocation = new LatLng(59.938955, 30.315644);
     private static final int DEFAULT_ZOOM = 15;
     private FusedLocationProviderClient fusedLocationProviderClient;
@@ -106,8 +114,9 @@ public class TrackerFragment extends Fragment{
         View root;
         binding = FragmentTrackerBinding.inflate(inflater, container, false);
         root = binding.getRoot();
-        database = ((MainActivity)getActivity()).getDataBase();
-        database.execSQL("CREATE TABLE IF NOT EXISTS tracker (latitude REAL, longitude REAL, title TEXT, snippet TEXT, color REAL)");
+        database = App.getInstance().getDatabase();
+        trackerDao = database.trackerDao();
+
         Places.initialize(mContext, "AIzaSyCd41NcKGeylMpBOrGn1J8wh8mp3YkA-MA");
         placesClient = Places.createClient(mContext);
 
@@ -156,7 +165,7 @@ public class TrackerFragment extends Fragment{
                         //todo:включить трекер
                         fab.setImageResource(R.drawable.stop);
                         helper_fab = true;
-                        PeriodicWorkRequest geoWorkRequest = new PeriodicWorkRequest.Builder(GeoWorker.class, 15, TimeUnit.MINUTES, 5, TimeUnit.MINUTES).addTag("geoTask").build(); //1, TimeUnit.MINUTES
+                        PeriodicWorkRequest geoWorkRequest = new PeriodicWorkRequest.Builder(GeoWorker.class, 15, TimeUnit.MINUTES ).addTag("geoTask").build(); //1, TimeUnit.MINUTES
                         WorkManager.getInstance(getContext()).enqueue(geoWorkRequest);
                     }
                 }
@@ -200,26 +209,7 @@ public class TrackerFragment extends Fragment{
     };
 
     private void getmarkerDB(GoogleMap map){
-        //Cursor cursor = database.rawQuery("SELECT * FROM tracker", null);
-        Cursor cursor = database.rawQuery("SELECT * FROM markers", null);
-        while(cursor.moveToNext()){
-            double latitude = cursor.getDouble(0);
-            double longitude = cursor.getDouble(1);
-            String title = cursor.getString(2);
-            String snippet = cursor.getString(3);
-            float color = cursor.getFloat(4);
-
-            Log.i("WTF?????????", title);
-            LatLng position = new LatLng(latitude, longitude);
-
-            map.addMarker(new MarkerOptions()
-                    .position(position)
-                    .title(title)
-                    .snippet(snippet)
-                    .draggable(false)
-                    .icon(BitmapDescriptorFactory.defaultMarker(color)));
-        }
-        cursor.close();
+        //Может быть понадобится если хочется посмотреть начало и конец маршрута. Хорошая идея.
     }
 
     private void updateLocationUI(GoogleMap map) {
@@ -294,26 +284,31 @@ public class TrackerFragment extends Fragment{
 
         Polyline default_line = null;
 
-            Cursor cursor1 = database.rawQuery("SELECT * FROM tracker", null);
+
+            List<Tracker> trackerList = trackerDao.getAll();
+            Iterator<Tracker> trackerIterator = trackerList.iterator();
             double lat = 0d;
             double longit = 0d;
             LatLng coords;
-            while(cursor1.moveToNext()) {
+            while (trackerIterator.hasNext()){
+                Tracker tracker = trackerIterator.next();
                 if(lat != 0d)
                 {
                     LatLng temp = new LatLng(lat, longit);
-                    coords = new LatLng(cursor1.getDouble(0), cursor1.getDouble(1));
-                    default_line = map.addPolyline(new PolylineOptions().clickable(false).add(temp, coords)
+                    coords = new LatLng(tracker.latitude, tracker.longitude);
+                     map.addPolyline(new PolylineOptions().clickable(false).add(temp, coords)
                             .color(R.color.MediumSlateBlue).startCap(new RoundCap()).endCap(new RoundCap())
                             .width(width));
                     lat = coords.latitude;
                     longit =coords.longitude;
                 }
                 else{
-                    lat = cursor1.getDouble(0);
-                    longit = cursor1.getDouble(1);
-                    coords = new LatLng(lat, longit);
+                    lat = tracker.latitude;
+                    longit = tracker.longitude;
                 }
             }
+
+
+
         }
 }

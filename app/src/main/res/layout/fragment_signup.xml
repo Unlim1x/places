@@ -11,6 +11,71 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
+        <!--
+        Этот лэйаут можно потом попробовать реализовать
+        он представляет собой набор edittext
+        чтобы вводить код в 6 разных ячеек -->
+        <LinearLayout
+            android:id="@+id/layout_with_code"
+            android:layout_centerInParent="true"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:visibility="invisible"
+            >
+
+            <EditText
+                android:id="@+id/otpET1"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:inputType="number"
+                android:maxLength="1"
+                android:gravity="center"
+                android:textSize="20sp"/>
+
+            <EditText
+                android:id="@+id/otpET2"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:inputType="number"
+                android:maxLength="1"
+                android:gravity="center"
+                android:textSize="20sp"/>
+            <EditText
+                android:id="@+id/otpET3"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:inputType="number"
+                android:maxLength="1"
+                android:gravity="center"
+                android:textSize="20sp"/>
+
+            <EditText
+                android:id="@+id/otpET4"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:inputType="number"
+                android:maxLength="1"
+                android:gravity="center"
+                android:textSize="20sp"/>
+            <EditText
+                android:id="@+id/otpET5"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:inputType="number"
+                android:maxLength="1"
+                android:gravity="center"
+                android:textSize="20sp"/>
+            <EditText
+                android:id="@+id/otpET6"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:inputType="number"
+                android:gravity="center"
+                android:maxLength="1"
+                android:textSize="20sp"/>
+
+        </LinearLayout>
 
         <TextView
             android:id="@+id/signup_text"

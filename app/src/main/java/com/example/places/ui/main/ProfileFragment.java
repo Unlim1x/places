@@ -24,6 +24,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.example.places.App;
 import com.example.places.MainActivity;
 import com.example.places.R;
 import com.example.places.SettingsActivity;
@@ -31,10 +32,17 @@ import com.example.places.SigninActivity;
 import com.example.places.databinding.FragmentMainBinding;
 import com.example.places.databinding.FragmentPlacesBinding;
 import com.example.places.databinding.FragmentProfileBinding;
+import com.example.places.room.daos.MarkerDao;
+import com.example.places.room.daos.ProfileDao;
+import com.example.places.room.daos.TrackerDao;
+import com.example.places.room.database.PlacesDatabase;
+import com.example.places.room.entities.Profile;
 import com.example.places.ui.first_open.EntryFragment;
 import com.example.places.ui.first_open.SignupFragment;
 
 import java.io.File;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -45,7 +53,10 @@ public class ProfileFragment extends Fragment {
 
     FragmentProfileBinding binding;
     private static final String ARG_PARAM1 = "param1";
-    SQLiteDatabase database;
+    PlacesDatabase database;
+    ProfileDao profileDao;
+    MarkerDao markerDao;
+    TrackerDao trackerDao;
     Context mContext;
 
     // TODO: Rename and change types of parameters
@@ -91,13 +102,19 @@ public class ProfileFragment extends Fragment {
         View root;
         binding = FragmentProfileBinding.inflate(inflater, container, false);
         root = binding.getRoot();
+        database = App.getInstance().getDatabase();
+        profileDao = database.profileDao();
+        markerDao = database.markerDao();
+        trackerDao = database.trackerDao();
         return root;
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        database = ((MainActivity)getActivity()).getDataBase();
+
+
+
         TextView username = getView().findViewById(R.id.username);
         username.setText(((MainActivity)getActivity()).getUsername());
 
@@ -132,15 +149,22 @@ public class ProfileFragment extends Fragment {
                         .setPositiveButton("Да",
                                 new DialogInterface.OnClickListener() {
                                     public void onClick(DialogInterface dialog,int id) {
-                                        Log.i("deleting",""+ database.delete("tracker", null, null));
-                                        Log.i("deleting",""+ database.delete("markers", null, null));
-                                        ContentValues cv = new ContentValues();
-                                        cv.put("loggedout", 1);
-                                        database.update("profiles", cv, "loggedout = 0", null);
-                                        cv.put("loggedout", 0);
-                                        database.update("profiles", cv, "loggedout = 1", null);
-                                        getActivity().finish();
+
+                                            markerDao.nukeTable();
+                                            trackerDao.nukeTable();
+
+                                            List<Profile> profiles = profileDao.getAll();
+                                            Iterator<Profile> profileIterator = profiles.iterator();
+
+                                            while(profileIterator.hasNext()){
+                                                Profile profile = profileIterator.next();
+                                                profile.loggedout = 1;
+                                                profileDao.update(profile);
+
+                                            }
                                         getActivity().recreate();
+                                        return;
+
                                     }
                                 })
                         .setNegativeButton("Отменить",
