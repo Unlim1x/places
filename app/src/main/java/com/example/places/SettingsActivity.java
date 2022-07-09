@@ -27,16 +27,26 @@ import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.PreferenceScreen;
 
+import com.example.places.room.daos.MarkerDao;
+import com.example.places.room.daos.TrackerDao;
+import com.example.places.room.database.PlacesDatabase;
+import com.google.android.libraries.places.api.model.Place;
+
 public class SettingsActivity extends AppCompatActivity {
     Preference pf;
     SharedPreferences mSettings;
     public SharedPreferences.Editor editor;
+    PlacesDatabase database;
+    MarkerDao markerDao;
+    TrackerDao trackerDao;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mSettings = getSharedPreferences("s1paraX", Context.MODE_PRIVATE);
         editor = mSettings.edit();
-
+        database = App.instance.getDatabase();
+        markerDao = database.markerDao();
+        trackerDao = database.trackerDao();
         setContentView(R.layout.settings_activity);
         if (savedInstanceState == null) {
             getSupportFragmentManager()
@@ -52,7 +62,9 @@ public class SettingsActivity extends AppCompatActivity {
     }
 
     public static class SettingsFragment extends PreferenceFragmentCompat {
-        SQLiteDatabase database;
+        PlacesDatabase database;
+        MarkerDao markerDao;
+        TrackerDao trackerDao;
         @Override
         public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
             setPreferencesFromResource(R.xml.root_preferences, rootKey);
@@ -61,7 +73,9 @@ public class SettingsActivity extends AppCompatActivity {
         @Override
         public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
             super.onViewCreated(view, savedInstanceState);
-            database = getContext().openOrCreateDatabase("myplacesx.db", MODE_PRIVATE, null);
+            database = App.instance.getDatabase();
+            markerDao = database.markerDao();
+            trackerDao = database.trackerDao();
             ListPreference theme = getPreferenceManager().findPreference("theme");
             if (AppCompatDelegate.getDefaultNightMode() == AppCompatDelegate.MODE_NIGHT_NO)
                 theme.setValueIndex(1);
@@ -216,7 +230,8 @@ public class SettingsActivity extends AppCompatActivity {
                             .setPositiveButton("Очистить",
                                     new DialogInterface.OnClickListener() {
                                         public void onClick(DialogInterface dialog,int id) {
-                                            Log.i("deleting",""+ database.delete("markers", null, null));
+                                            Log.i("deleting","");
+                                            markerDao.nukeTable();
                                         }
                                     })
                             .setNegativeButton("Отменить",
@@ -250,7 +265,7 @@ public class SettingsActivity extends AppCompatActivity {
                             .setPositiveButton("Очистить",
                                     new DialogInterface.OnClickListener() {
                                         public void onClick(DialogInterface dialog,int id) {
-                                            Log.i("deleting",""+ database.delete("tracker", null, null));
+                                            trackerDao.nukeTable();
                                         }
                                     })
                             .setNegativeButton("Отменить",

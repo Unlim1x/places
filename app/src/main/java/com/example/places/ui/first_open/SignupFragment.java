@@ -1,15 +1,25 @@
 package com.example.places.ui.first_open;
 
+import static android.app.Activity.RESULT_OK;
+import static android.view.KeyEvent.KEYCODE_DEL;
+
+import android.content.ActivityNotFoundException;
+import android.content.BroadcastReceiver;
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
+import android.provider.SyncStateContract;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -18,15 +28,27 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.view.KeyEventDispatcher;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
+import com.example.places.App;
 import com.example.places.MainActivity;
 import com.example.places.R;
 import com.example.places.SigninActivity;
 import com.example.places.databinding.FragmentSignupBinding;
+import com.example.places.room.daos.InitAppDao;
+import com.example.places.room.daos.ProfileDao;
+import com.example.places.room.database.PlacesDatabase;
+import com.example.places.room.entities.InitApp;
+import com.example.places.room.entities.Profile;
 import com.example.places.ui.dialogs.OneButtonDialog;
+import com.google.android.gms.auth.api.phone.SmsRetriever;
+import com.google.android.gms.common.api.CommonStatusCodes;
+import com.google.android.gms.common.api.Status;
+import com.google.android.gms.tasks.Task;
 
 
 import java.io.DataInputStream;
@@ -55,7 +77,9 @@ import java.util.concurrent.ExecutionException;
 public class SignupFragment extends Fragment {
 
     FragmentSignupBinding binding;
-    SQLiteDatabase database;
+    PlacesDatabase database;
+    ProfileDao profileDao;
+    InitAppDao initAppDao;
     Button send_code;
     ProgressBar progressBar;
     TextView textResendCode;
@@ -64,6 +88,7 @@ public class SignupFragment extends Fragment {
     Button resend_code;
     Timer buttonTimer;
     Timer textTimer;
+    EditText[] otpETs = new EditText[6];
     boolean code_accepted = false;
     int generated_code;
     byte time = 60;
@@ -80,7 +105,10 @@ public class SignupFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        database = getActivity().openOrCreateDatabase("myplacesx.db", android.content.Context.MODE_PRIVATE, null);
+
+        database = App.getInstance().getDatabase();
+        profileDao = database.profileDao();
+        initAppDao = database.initAppDao();
     }
 
     @Override
@@ -93,9 +121,21 @@ public class SignupFragment extends Fragment {
         return root;
     }
 
+
+    private int checkWhoHasFocus() {
+        for (int i = 0; i < otpETs.length; i++) {
+            EditText tempET = otpETs[i];
+            if (tempET.hasFocus()) {
+                return i;
+            }
+        }
+        return 123;
+    }
+
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
 
         TextView mobile_or_code = binding.signupTextEnterMobileOrCode;
         TextView incorrect_code = binding.singupIncorrectCode;
@@ -176,7 +216,10 @@ public class SignupFragment extends Fragment {
                     resend_code.setVisibility(View.INVISIBLE);
                     change_number.setVisibility(View.INVISIBLE);
                     textResendCode.setVisibility(View.VISIBLE);
+
                     code.setVisibility(View.VISIBLE);
+                    //binding.layoutWithCode.setVisibility(View.VISIBLE);
+
                     accept_code.setVisibility(View.VISIBLE);
                     incorrect_code.setVisibility(View.INVISIBLE);
                     incorrect_code.setText("Неверный код");
@@ -200,31 +243,49 @@ public class SignupFragment extends Fragment {
                 if(code.getText().toString().length()==6)
                 try {
                     if (sendCode(phone_number_db, code.getText().toString())){
+                       // accept_code.setEnabled(false);
                         incorrect_code.setVisibility(View.INVISIBLE);
-                        progressBar.setVisibility(View.INVISIBLE);
-                        ContentValues cv = new ContentValues();
-                        cv.put("first", 1);
-                        database.insert("init", null, cv);
+                        progressBar.setVisibility(View.VISIBLE);
 
-                        ContentValues pcv = new ContentValues();
-                        ContentValues upd = new ContentValues(); //Здесь обновляем локальный профиль
-                        upd.put("loggedout", 1);
-                        database.update("profiles", upd, "loggedout = 0",null);
-                        pcv.put("username", phone_number_db);
-                        pcv.put("phone", phone_number_db);
-                        pcv.put("type", 1);
-                        pcv.put("loggedout", 0);
-                        database.insert("profiles", null, pcv);
+                        Runnable runnable = ()-> {
 
-                        if (buttonTimer != null)
-                            buttonTimer.cancel();
+                            if (initAppDao.getInit() == 0) {
+                                InitApp initApp = new InitApp();
+                                initApp.first = 1;
+                                initAppDao.insert(initApp);
+                            }
 
-                        if (textTimer != null)
-                            textTimer.cancel();
+                            Profile localProfile = profileDao.getLocal();
+                            localProfile.loggedout = 1;
+                            profileDao.update(localProfile);
 
-                       // Intent intent = getActivity().getIntent();
-                        getActivity().finish();
-                        startActivity(new Intent(getActivity(), MainActivity.class));
+                            Profile auth_profile = new Profile();
+                            auth_profile.username = phone_number_db;
+                            auth_profile.phone = phone_number_db;
+                            auth_profile.type = 1;
+                            auth_profile.loggedout = 0;
+
+                            Profile is_here = profileDao.getByPhone(phone_number_db);
+                            if (is_here!=null)
+                                profileDao.update(auth_profile);
+                            else
+                                profileDao.insert(auth_profile);
+
+                            if (buttonTimer != null)
+                                buttonTimer.cancel();
+
+                            if (textTimer != null)
+                                textTimer.cancel();
+
+                            // Intent intent = getActivity().getIntent();
+                            progressBar.setVisibility(View.INVISIBLE);
+                            getActivity().finish();
+                            startActivity(new Intent(getActivity(), MainActivity.class));
+                            return;
+                        };
+                        Thread thread = new Thread(runnable);
+                        thread.start();
+
                     }
                     else{
                         progressBar.setVisibility(View.INVISIBLE);
@@ -257,8 +318,9 @@ public class SignupFragment extends Fragment {
             }
         }, 60000); // каждую минуту
     }
+    Timer myTimer;
     private void resendCodeGeneratorText(){
-        Timer myTimer;
+
         myTimer = new Timer();
         textTimer = myTimer;
         myTimer.schedule(new TimerTask() {
@@ -292,10 +354,22 @@ public class SignupFragment extends Fragment {
         }
     };
 
+    @Override
+    public void onStop(){
+        super.onStop();
+        if (myTimer != null)
+        myTimer.cancel();
+
+    }
+
+
+
+
 
 
     private void sendPhone(String phone){
        //TODO: Надо какой-то апи найти для отправки смс. Я пока не понимаю как.
+
         CompletableFuture<Void> voidCompletableFuture;
         voidCompletableFuture = CompletableFuture.runAsync(()->{
             try {

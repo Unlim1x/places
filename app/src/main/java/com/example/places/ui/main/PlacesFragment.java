@@ -1,5 +1,6 @@
 package com.example.places.ui.main;
 
+import com.google.common.util.concurrent.Futures;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -28,8 +29,12 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
+import com.example.places.App;
 import com.example.places.MainActivity;
 import com.example.places.MapsActivity;
+import com.example.places.room.daos.MarkerDao;
+import com.example.places.room.database.PlacesDatabase;
+import com.example.places.room.entities.Markers;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -54,9 +59,13 @@ import com.google.android.gms.tasks.Task;
 import com.google.android.libraries.places.api.Places;
 import com.google.android.libraries.places.api.net.PlacesClient;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
+import com.google.common.util.concurrent.Futures;
+import com.google.common.util.concurrent.ListenableFuture;
+import com.google.common.util.concurrent.ListenableFutureTask;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Iterator;
 import java.util.List;
 
 
@@ -66,7 +75,9 @@ import java.util.List;
 public class PlacesFragment extends Fragment {
 
     Context mContext;
-    private SQLiteDatabase database;
+    private PlacesDatabase database;
+    private MarkerDao markerDao;
+
     private static final String ARG_SECTION_NUMBER = "section_number";
     private LinearLayout llBottomSheet;
     private BottomSheetBehavior bottomSheetBehavior;
@@ -134,7 +145,8 @@ public class PlacesFragment extends Fragment {
         View root;
         binding = FragmentPlacesBinding.inflate(inflater, container, false);
         root = binding.getRoot();
-        database = ((MainActivity)getActivity()).getDataBase();
+        database = App.getInstance().getDatabase();
+        markerDao = database.markerDao();
         Places.initialize(mContext, "AIzaSyCd41NcKGeylMpBOrGn1J8wh8mp3YkA-MA");
         placesClient = Places.createClient(mContext);
 
@@ -425,74 +437,83 @@ public class PlacesFragment extends Fragment {
 
     }
 
-
-
-
-
-
-
-
-
     // [END maps_current_place_update_location_ui]
 
     private void putmarkerDB(double latitude, double longitude, String title, String snippet, boolean draggable, float color){
-        ContentValues dataput = new ContentValues();
-        dataput.put("latitude", latitude);
-        dataput.put("longitude", longitude);
-        dataput.put("title", title);
-        dataput.put("snippet", snippet);
-        Log.i("I am trying to put snippet", snippet);
-        if (draggable)
-            dataput.put("drag", 1);
-        else
-            dataput.put("drag", 0);
-        dataput.put("color", color);
 
-        database.insert("markers", null, dataput);
+            Markers markers = new Markers();
+            markers.latitude = latitude;
+            markers.longitude = longitude;
+            markers.title = title;
+            markers.snippet = snippet;
+            markers.drag = (draggable) ? 1 : 0;
+            markers.color = color;
+            LocalDateTime current = LocalDateTime.now();
+            markers.date = current.toString();
+            markerDao.insert(markers);
+            return;
+
     }
 
     private void getmarkerDB(GoogleMap map){
-        Cursor cursor = database.rawQuery("SELECT * FROM markers", null);
-        while(cursor.moveToNext()){
-            marker_counter++;
-            double latitude = cursor.getDouble(0);
-            double longitude = cursor.getDouble(1);
-            String title = cursor.getString(2);
-            String snippet = cursor.getString(3);
-            int drag = cursor.getInt(4);
-            float color = cursor.getFloat(5);
 
-            boolean draggable = drag == 1;
-            Log.i("WTF?????????", title);
-            LatLng position = new LatLng(latitude, longitude);
 
-            map.addMarker(new MarkerOptions()
-                    .position(position)
-                    .title(title)
-                    .snippet(snippet)
-                    .draggable(draggable)
-                    .icon(BitmapDescriptorFactory.defaultMarker(color)));
-        }
-        cursor.close();
+            List<Markers> markers = markerDao.getAll();
+            Iterator<Markers> iterator = markers.iterator();
+            while(iterator.hasNext()){
+                Markers marker = iterator.next();
+                LatLng position = new LatLng(marker.latitude, marker.longitude);
+                boolean draggable = (marker.drag == 1) ? true: false;
+                map.addMarker(new MarkerOptions()
+                        .position(position)
+                        .title(marker.title)
+                        .snippet(marker.snippet)
+                        .draggable(draggable)
+                        .icon(BitmapDescriptorFactory.defaultMarker(marker.color)));
+            }
+            return;
+
+
+
+
+
+
+
     }
 
     private void renamemarkerDB(String snippet, String title_new){
-        ContentValues cv = new ContentValues();
-        cv.put("title", title_new);
-        database.update("markers", cv, "snippet = "+snippet, null);
+        Runnable runnable = () -> {
+            Markers marker = markerDao.getBySnippet(snippet);
+            marker.title = title_new;
+            markerDao.update(marker);
+            return;
+        };
+        Thread thread = new Thread(runnable);
+        thread.start();
+
     }
     private void dragmarkerDB(Marker marker){
-        ContentValues cv = new ContentValues();
-        cv.put("latitude", marker.getPosition().latitude);
-        cv.put("longitude", marker.getPosition().longitude);
-        database.update("markers", cv, "snippet = "+marker.getSnippet(), null);
+        Runnable runnable = () -> {
+            Markers markerDB = markerDao.getBySnippet(marker.getSnippet());
+            markerDB.latitude = marker.getPosition().latitude;
+            markerDB.longitude = marker.getPosition().longitude;
+            markerDao.update(markerDB);
+            return;
+        };
+        Thread thread = new Thread(runnable);
+        thread.start();
+
     }
 
     private void deletemarkerDB(Marker marker){
-        Log.i("deleting",""+database.delete("markers", "snippet="+marker.getSnippet(), null));
+        Runnable runnable = () -> {
+            Markers markerDB = markerDao.getBySnippet(marker.getSnippet());
+            markerDao.delete(markerDB);
+            return;
+        };
+        Thread thread = new Thread(runnable);
+        thread.start();
     }
-
-
 
 
     @Override

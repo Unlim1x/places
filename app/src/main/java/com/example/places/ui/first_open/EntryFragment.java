@@ -1,7 +1,9 @@
 package com.example.places.ui.first_open;
 
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -20,9 +22,15 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
+import com.example.places.App;
 import com.example.places.MainActivity;
 import com.example.places.R;
 import com.example.places.databinding.FragmentEntryBinding;
+import com.example.places.room.daos.InitAppDao;
+import com.example.places.room.daos.ProfileDao;
+import com.example.places.room.database.PlacesDatabase;
+import com.example.places.room.entities.InitApp;
+import com.example.places.room.entities.Profile;
 import com.example.places.ui.dialogs.OneButtonDialog;
 
 import java.time.LocalDateTime;
@@ -31,12 +39,13 @@ import java.time.LocalDateTime;
 public class EntryFragment extends Fragment {
 
     FragmentEntryBinding binding;
-    SQLiteDatabase database;
+    PlacesDatabase database;
+    InitAppDao initAppDao;
+    ProfileDao profileDao;
+    SharedPreferences mSettings;
     private static final String ARG_PARAM1 = "param1";
 
-    public EntryFragment(SQLiteDatabase database){
-        this.database = database;
-    }
+    public EntryFragment(){}
 
 
     @Override
@@ -50,7 +59,11 @@ public class EntryFragment extends Fragment {
         // Inflate the layout for this fragment
         View root;
         binding = FragmentEntryBinding.inflate(inflater, container, false);
+        mSettings = getContext().getSharedPreferences("s1paraX", Context.MODE_PRIVATE);
         root = binding.getRoot();
+        database = App.getInstance().getDatabase();
+        initAppDao = database.initAppDao();
+        profileDao = database.profileDao();
         return root;
     }
 
@@ -213,22 +226,25 @@ public class EntryFragment extends Fragment {
         local.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ContentValues cv = new ContentValues();
-                cv.put("first", 1);
-                database.insert("init", null, cv);
-                //database.close();
-                int a = LocalDateTime.now().hashCode();
-                a = Math.abs(a);
-                String username = "User_" + String.valueOf(a);
-                ContentValues pcv = new ContentValues();
-                pcv.put("username", username);
-                pcv.put("phone", "null");
-                pcv.put("type", 0);
-                pcv.put("loggedout", 0);
-                database.insert("profiles", null, pcv);
-                Intent intent = getActivity().getIntent();
-                getActivity().finish();
-                startActivity(intent);
+
+                    SharedPreferences.Editor editor = mSettings.edit();
+                    editor.putBoolean("auth", true);
+                    editor.apply();
+                    InitApp initApp = new InitApp();
+                    initApp.first = 1;
+                    initAppDao.insert(initApp);
+                    Profile profile = new Profile();
+                    profile.username = "Локальный профиль";
+                    profile.phone = "null";
+                    profile.type = 0;
+                    profile.loggedout =0;
+                    profileDao.insert(profile);
+                    Intent intent = getActivity().getIntent();
+                    getActivity().finish();
+                    startActivity(intent);
+                    return;
+
+
             }
         });
 

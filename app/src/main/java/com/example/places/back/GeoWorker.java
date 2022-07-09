@@ -9,6 +9,10 @@ import android.database.sqlite.SQLiteDatabase;
 import android.location.Location;
 import android.location.LocationManager;
 
+import com.example.places.App;
+import com.example.places.room.daos.TrackerDao;
+import com.example.places.room.database.PlacesDatabase;
+import com.example.places.room.entities.Tracker;
 import com.google.android.gms.location.CurrentLocationRequest;
 import com.google.android.gms.location.LocationRequest;
 
@@ -42,16 +46,16 @@ public class GeoWorker extends Worker {
 
     private FusedLocationProviderClient fusedLocationProviderClient;
     Location location;
-    SQLiteDatabase database;
+    PlacesDatabase database;
+    TrackerDao trackerDao;
     private final CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
 
 
     public GeoWorker(@NonNull Context context, @NonNull WorkerParameters workerParams) {
         super(context, workerParams);
-        database = getApplicationContext().openOrCreateDatabase("myplacesx.db", android.content.Context.MODE_PRIVATE, null);
+        database = App.getInstance().getDatabase();
+        trackerDao = database.trackerDao();
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(getApplicationContext());
-        database.execSQL("CREATE TABLE IF NOT EXISTS tracker (latitude REAL, longitude REAL, title TEXT, snippet TEXT, color REAL)");
-
     }
 
     @NonNull
@@ -70,21 +74,23 @@ public class GeoWorker extends Worker {
             Task<Location> locationResult = fusedLocationProviderClient.getCurrentLocation(Priority.PRIORITY_HIGH_ACCURACY, cancellationTokenSource.getToken());
             int a = LocalDateTime.now().hashCode();
             float color = (float) Math.random() * 359;
-            ContentValues dataput = new ContentValues();
 
             locationResult.addOnCompleteListener(new OnCompleteListener<Location>() {
                 @Override
                 public void onComplete(@NonNull Task<Location> task) {
-                    location = task.getResult();
 
-                    dataput.put("latitude", location.getLatitude());
-                    dataput.put("longitude", location.getLongitude());
-                    dataput.put("title", String.valueOf(a));
-                    dataput.put("snippet", "default");
-                    dataput.put("color", color);
-                    database.insert("tracker", null, dataput);
-                    Log.e("GEO", "okay now, latitude= " + location.getLatitude() + "  longitude =" + location.getLongitude());
-                    Log.i("Geo", "ends at" + LocalTime.now());
+                        location = task.getResult();
+                        Tracker tracker = new Tracker();
+                        tracker.latitude = location.getLatitude();
+                        tracker.longitude = location.getLongitude();
+                        tracker.title = String.valueOf(a);
+                        tracker.snippet = "default";
+                        tracker.color = color;
+                        tracker.date = LocalDateTime.now().toString();
+                        trackerDao.insert(tracker);
+                        Log.e("GEO", "okay now, latitude= " + location.getLatitude() + "  longitude =" + location.getLongitude());
+                        Log.i("Geo", "ends at" + LocalTime.now());
+
 
                 }
             });
