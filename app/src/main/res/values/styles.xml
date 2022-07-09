@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="ProgressBarStyle">
+        <item name="colorAccent">@color/SlateBlue</item>
+    </style>
+
+    <style name="AppBarStyleLight">
+        <item name="colorAccent">@color/SlateBlue</item>
+    </style>
+
+    <style name="AppBarStyleDark">
+        <item name="colorAccent">@color/AlmostBlack</item>
+    </style>
+</resources>

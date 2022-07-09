@@ -1,0 +1,69 @@
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <PreferenceCategory app:title="@string/common_header">
+
+        <ListPreference
+            app:defaultValue="system_theme"
+            app:entries="@array/theme_entries"
+            app:entryValues="@array/theme_values"
+            app:key="theme"
+            app:title="@string/app_theme"
+            app:useSimpleSummaryProvider="true" />
+
+        <PreferenceScreen
+            android:summary="Разрешите фоновую локацию"
+            android:title="@string/open_system_geo"
+            app:key="open_geo_system" />
+
+    </PreferenceCategory>
+
+    <PreferenceCategory app:title="@string/places_header">
+
+        <ListPreference
+            app:defaultValue="classic"
+            app:entries="@array/map_style_entries"
+            app:entryValues="@array/map_style_values"
+            app:key="places_map_style"
+            app:title="@string/places_map_style"
+            app:useSimpleSummaryProvider="true" />
+        <PreferenceScreen
+            android:summary="@string/places_clear"
+            android:title="@string/clear_history"
+            app:key="clear_places" />
+
+    </PreferenceCategory>
+    <PreferenceCategory app:title="@string/tracker_header">
+        <ListPreference
+            app:defaultValue="tracker_style"
+            app:entries="@array/trackermap_style_entries"
+            app:entryValues="@array/trackermap_style_values"
+            app:key="tracker_map_style"
+            app:title="@string/tracker_map_style"
+            app:useSimpleSummaryProvider="true" />
+
+        <ListPreference
+            app:defaultValue="two"
+            app:entries="@array/tracker_update_entries"
+            app:entryValues="@array/tracker_update_values"
+            app:key="tracker_update_keys"
+            app:title="@string/tracker_interval"
+            app:useSimpleSummaryProvider="true" />
+
+        <ListPreference
+            app:defaultValue="mid"
+            app:entries="@array/tracker_width_entries"
+            app:entryValues="@array/tracker_width_values"
+            app:key="tracker_width_keys"
+            app:title="@string/tracker_width"
+            app:useSimpleSummaryProvider="true" />
+        <PreferenceScreen
+            android:summary="@string/tracker_clear"
+            android:title="@string/clear_history"
+            app:key="clear_tracker" />
+
+
+
+    </PreferenceCategory>
+
+</PreferenceScreen>

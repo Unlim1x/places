@@ -1,0 +1,66 @@
+<resources>
+    <!-- Reply Preference -->
+    <string-array name="theme_entries">
+        <item>Системная</item>
+        <item>Светлая</item>
+        <item>Темная</item>
+    </string-array>
+
+    <string-array name="theme_values">
+        <item>system_theme</item>
+        <item>light_theme</item>
+        <item>dark_theme</item>
+    </string-array>
+
+    <string-array name="map_style_entries">
+        <item>Классическая</item>
+        <item>Оттенки серого</item>
+        <item>Ночная</item>
+    </string-array>
+
+    <string-array name="map_style_values">
+        <item>classic</item>
+        <item>grayscale</item>
+        <item>night</item>
+    </string-array>
+    <string-array name="trackermap_style_entries">
+        <item>Трекер</item>
+        <item>Классическая</item>
+        <item>Оттенки серого</item>
+        <item>Ночная</item>
+    </string-array>
+
+    <string-array name="trackermap_style_values">
+        <item>tracker_style</item>
+        <item>tracker_classic</item>
+        <item>tracker_grayscale</item>
+        <item>tracker_night</item>
+    </string-array>
+
+    <string-array name="tracker_update_entries">
+        <item>2 минуты</item>
+        <item>5 минут</item>
+        <item>10 минут</item>
+    </string-array>
+
+    <string-array name="tracker_update_values">
+        <item>two</item>
+        <item>five</item>
+        <item>ten</item>
+    </string-array>
+
+    <string-array name="tracker_width_entries">
+        <item>Тонкая</item>
+        <item>Средняя</item>
+        <item>Широкая</item>
+    </string-array>
+
+    <string-array name="tracker_width_values">
+        <item>slim</item>
+        <item>mid</item>
+        <item>large</item>
+    </string-array>
+
+
+
+</resources>
