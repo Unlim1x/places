@@ -8,7 +8,7 @@
     <uses-permission android:name="android.permission.INTERNET" />
 
     <application
-        android:name=".App"
+        android:name="ru.lim1x.places.App"
         android:allowBackup="true"
         android:icon="@mipmap/main_ico"
         android:label="@string/app_name"
@@ -17,11 +17,11 @@
 
         android:theme="@style/Theme.Places">
         <activity
-            android:name=".SettingsActivity"
+            android:name="ru.lim1x.places.SettingsActivity"
             android:exported="false"
             android:label="@string/title_activity_settings" />
         <activity
-            android:name=".SigninActivity"
+            android:name="ru.lim1x.places.SigninActivity"
             android:exported="false"
             android:label="@string/title_activity_signin" />
 
@@ -39,7 +39,7 @@
             android:value="AIzaSyCd41NcKGeylMpBOrGn1J8wh8mp3YkA-MA" />
 
         <activity
-            android:name=".MainActivity"
+            android:name="ru.lim1x.places.MainActivity"
             android:exported="true"
             android:label="@string/title_activity_main"
             android:theme="@style/Theme.Places.NoActionBar">
