@@ -1,78 +1,37 @@
-package com.example.places;
+package com.example.places.activities;
 
-import android.app.Activity;
-import android.content.BroadcastReceiver;
-import android.content.ContentValues;
 import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
-import android.location.Geocoder;
-import android.location.Location;
 import android.os.Bundle;
 
-import com.example.places.databinding.FragmentEntryBinding;
+import com.example.places.R;
 import com.example.places.databinding.FragmentMainBinding;
 import com.example.places.databinding.FragmentSignupBinding;
+import com.example.places.room.App;
 import com.example.places.room.daos.InitAppDao;
 import com.example.places.room.daos.ProfileDao;
 import com.example.places.room.database.PlacesDatabase;
 import com.example.places.room.entities.Profile;
-import com.example.places.ui.dialogs.OneButtonDialog;
 import com.example.places.ui.first_open.EntryFragment;
 import com.example.places.ui.first_open.SignupFragment;
-import com.google.android.gms.location.FusedLocationProviderClient;
-import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.maps.CameraUpdateFactory;
-import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.MapsInitializer;
 
-import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.CameraPosition;
-import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-import com.google.android.libraries.places.api.Places;
-import com.google.android.libraries.places.api.net.PlacesClient;
-import com.google.android.material.bottomsheet.BottomSheetBehavior;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.tabs.TabLayout;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
-import androidx.preference.PreferenceManager;
 import androidx.viewpager.widget.ViewPager;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.view.View;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
-import android.widget.Button;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.TextView;
-import android.widget.Toast;
 
 import com.example.places.ui.main.SectionsPagerAdapter;
 import com.example.places.databinding.ActivityMainBinding;
 
-import java.io.IOException;
-import java.time.LocalDateTime;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Locale;
 
 
 public class MainActivity extends AppCompatActivity  {

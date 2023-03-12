@@ -1,10 +1,9 @@
-package com.example.places;
+package com.example.places.activities;
 
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.Settings;
@@ -12,7 +11,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.EditText;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -21,16 +19,16 @@ import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
-import androidx.preference.EditTextPreference;
 import androidx.preference.ListPreference;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.PreferenceScreen;
 
+import com.example.places.R;
+import com.example.places.room.App;
 import com.example.places.room.daos.MarkerDao;
 import com.example.places.room.daos.TrackerDao;
 import com.example.places.room.database.PlacesDatabase;
-import com.google.android.libraries.places.api.model.Place;
 
 public class SettingsActivity extends AppCompatActivity {
     Preference pf;

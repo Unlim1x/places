@@ -1,46 +1,37 @@
 package com.example.places.ui.main;
 
-import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.database.sqlite.SQLiteDatabase;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.example.places.App;
-import com.example.places.MainActivity;
+import com.example.places.room.App;
+import com.example.places.activities.MainActivity;
 import com.example.places.R;
-import com.example.places.SettingsActivity;
-import com.example.places.SigninActivity;
-import com.example.places.databinding.FragmentMainBinding;
-import com.example.places.databinding.FragmentPlacesBinding;
+import com.example.places.activities.SettingsActivity;
+import com.example.places.activities.SigninActivity;
+import com.example.places.back.adapters.FriendRVadapter;
 import com.example.places.databinding.FragmentProfileBinding;
 import com.example.places.room.daos.MarkerDao;
 import com.example.places.room.daos.ProfileDao;
 import com.example.places.room.daos.TrackerDao;
 import com.example.places.room.database.PlacesDatabase;
 import com.example.places.room.entities.Profile;
-import com.example.places.ui.first_open.EntryFragment;
-import com.example.places.ui.first_open.SignupFragment;
 
-import java.io.File;
 import java.util.Iterator;
 import java.util.List;
 
@@ -51,6 +42,7 @@ import java.util.List;
  */
 public class ProfileFragment extends Fragment {
 
+
     FragmentProfileBinding binding;
     private static final String ARG_PARAM1 = "param1";
     PlacesDatabase database;
@@ -58,6 +50,8 @@ public class ProfileFragment extends Fragment {
     MarkerDao markerDao;
     TrackerDao trackerDao;
     Context mContext;
+
+    FriendRVadapter friendRVadapter;
 
     // TODO: Rename and change types of parameters
     private String mParam1;
@@ -113,6 +107,15 @@ public class ProfileFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+
+        //todo: перенести позже
+
+        RecyclerView rv = binding.friendsRV;
+        LinearLayoutManager llm = new LinearLayoutManager(getContext());
+        rv.setLayoutManager(llm);
+        friendRVadapter = new FriendRVadapter();
+        rv.setAdapter(friendRVadapter);
+        binding.frameLayoutProfile.setBackgroundColor(getResources().getColor(R.color.DarkGrey));
 
 
         TextView username = getView().findViewById(R.id.username);

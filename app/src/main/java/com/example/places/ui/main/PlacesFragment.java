@@ -1,37 +1,32 @@
 package com.example.places.ui.main;
 
-import com.google.common.util.concurrent.Futures;
-import android.content.ContentValues;
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
-import android.content.pm.PackageManager;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.location.Location;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.DragEvent;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
+import android.widget.SeekBar;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.Observer;
-import androidx.lifecycle.ViewModelProvider;
 
-import com.example.places.App;
-import com.example.places.MainActivity;
-import com.example.places.MapsActivity;
+import com.example.places.room.App;
+import com.example.places.activities.MainActivity;
+import com.example.places.activities.MapsActivity;
 import com.example.places.room.daos.MarkerDao;
 import com.example.places.room.database.PlacesDatabase;
 import com.example.places.room.entities.Markers;
@@ -59,9 +54,6 @@ import com.google.android.gms.tasks.Task;
 import com.google.android.libraries.places.api.Places;
 import com.google.android.libraries.places.api.net.PlacesClient;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
-import com.google.common.util.concurrent.Futures;
-import com.google.common.util.concurrent.ListenableFuture;
-import com.google.common.util.concurrent.ListenableFutureTask;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -81,6 +73,7 @@ public class PlacesFragment extends Fragment {
     private static final String ARG_SECTION_NUMBER = "section_number";
     private LinearLayout llBottomSheet;
     private BottomSheetBehavior bottomSheetBehavior;
+    private LinearLayout zoom;
     private int marker_counter = 0;
     private static final String TAG = MapsActivity.class.getSimpleName();
     public GoogleMap map_observer;
@@ -114,6 +107,9 @@ public class PlacesFragment extends Fragment {
     private String[] likelyPlaceAddresses;
     private List[] likelyPlaceAttributions;
     private LatLng[] likelyPlaceLatLngs;
+
+    private float x = 0;
+    private float y = 0;
 
 
     private FragmentPlacesBinding binding;
@@ -155,6 +151,7 @@ public class PlacesFragment extends Fragment {
         return root;
         }
 
+    @SuppressLint("ClickableViewAccessibility")
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
@@ -166,11 +163,40 @@ public class PlacesFragment extends Fragment {
         if (mapFragment != null) {
             mapFragment.getMapAsync(callback);
         }
+        zoom = binding.getRoot().findViewById(R.id.seekBar);
+
+        zoom.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                switch (event.getAction()){
+                    case MotionEvent.ACTION_DOWN:
+                        x = event.getX();
+                        y = event.getY();
+                        break;
+                    case MotionEvent.ACTION_MOVE:
+                        if (event.getY() < y) {
+                            map_observer.moveCamera(CameraUpdateFactory.zoomTo(map_observer.getCameraPosition().zoom + 0.05f));
+                            y = event.getY();
+                        }
+                            else if (event.getY() > y) {
+                            map_observer.moveCamera(CameraUpdateFactory.zoomTo(map_observer.getCameraPosition().zoom - 0.05f));
+                            y = event.getY();
+                        }
+                            break;
+
+                }
+                return true;
+            }
+        });
+
+
+
     }
 
     private OnMapReadyCallback callback = new OnMapReadyCallback() {
         @Override
         public void onMapReady(GoogleMap map) {
+            map_observer = map;
             if(mSettings.contains("map_style")){
                 String style = mSettings.getString("map_style","");
                 if (style.equals("grayscale"))

@@ -1,72 +1,34 @@
 package com.example.places.ui.first_open;
 
-import static android.app.Activity.RESULT_OK;
-import static android.view.KeyEvent.KEYCODE_DEL;
-
-import android.content.ActivityNotFoundException;
-import android.content.BroadcastReceiver;
-import android.content.ContentValues;
-import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
-import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
-import android.provider.SyncStateContract;
 import android.util.Log;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.core.view.KeyEventDispatcher;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
-import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
-import com.example.places.App;
-import com.example.places.MainActivity;
-import com.example.places.R;
-import com.example.places.SigninActivity;
+import com.example.places.room.App;
+import com.example.places.activities.MainActivity;
 import com.example.places.databinding.FragmentSignupBinding;
 import com.example.places.room.daos.InitAppDao;
 import com.example.places.room.daos.ProfileDao;
 import com.example.places.room.database.PlacesDatabase;
 import com.example.places.room.entities.InitApp;
 import com.example.places.room.entities.Profile;
-import com.example.places.ui.dialogs.OneButtonDialog;
-import com.google.android.gms.auth.api.phone.SmsRetriever;
-import com.google.android.gms.common.api.CommonStatusCodes;
-import com.google.android.gms.common.api.Status;
-import com.google.android.gms.tasks.Task;
 
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.io.ObjectInputStream;
 import java.net.Socket;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.CompletableFuture;

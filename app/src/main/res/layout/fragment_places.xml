@@ -7,8 +7,12 @@
     tools:context=".ui.main.PlacesFragment">
 
 
+
     <!-- подключение нижнего экрана -->
     <include layout="@layout/activity_maps"/>
     <include layout="@layout/bottom_sheet" />
+    <include layout="@layout/seekbar"/>
+
+
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

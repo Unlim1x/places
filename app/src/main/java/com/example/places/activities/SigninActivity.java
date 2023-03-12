@@ -1,4 +1,4 @@
-package com.example.places;
+package com.example.places.activities;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -8,6 +8,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.places.R;
 import com.example.places.databinding.FragmentMainBinding;
 import com.example.places.ui.first_open.SignupFragment;
 

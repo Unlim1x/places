@@ -1,11 +1,15 @@
 package com.example.places.ui.main;
 
+import android.app.PendingIntent;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
-import android.graphics.Paint;
 import android.location.Location;
+
+import com.example.places.back.Utils;
+import com.example.places.back.recievers.LocationUpdatesBroadcastReceiver;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationServices;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -17,15 +21,18 @@ import androidx.work.WorkManager;
 
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
-import com.example.places.App;
-import com.example.places.MainActivity;
-import com.example.places.MapsActivity;
+import com.example.places.room.App;
+import com.example.places.activities.MainActivity;
+import com.example.places.activities.MapsActivity;
 import com.example.places.R;
-import com.example.places.back.GeoWorker;
+import com.example.places.back.workers.GeoWorker;
+import com.example.places.back.workers.GeoWorker2;
 import com.example.places.databinding.FragmentTrackerBinding;
 import com.example.places.room.daos.TrackerDao;
 import com.example.places.room.database.PlacesDatabase;
@@ -37,11 +44,8 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 
 import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.BitmapDescriptorFactory;
-import com.google.android.gms.maps.model.Cap;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MapStyleOptions;
-import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.android.gms.maps.model.RoundCap;
@@ -51,7 +55,6 @@ import com.google.android.libraries.places.api.Places;
 import com.google.android.libraries.places.api.net.PlacesClient;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
-import java.sql.ResultSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -62,7 +65,29 @@ import java.util.concurrent.TimeUnit;
  * Use the {@link TrackerFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class TrackerFragment extends Fragment{
+public class TrackerFragment extends Fragment implements SharedPreferences.OnSharedPreferenceChangeListener {
+    private LinearLayout zoom;
+    private LocationRequest mLocationRequest;
+    float x = 0;
+    float y = 0;
+    GoogleMap map_observer;
+    private static final int REQUEST_PERMISSIONS_REQUEST_CODE = 34;
+    /**
+     * The desired interval for location updates. Inexact. Updates may be more or less frequent.
+     */
+    private static final long UPDATE_INTERVAL = 60000; // Every 60 seconds.
+
+    /**
+     * The fastest rate for active location updates. Updates will never be more frequent
+     * than this value, but they may be less frequent.
+     */
+    private static final long FASTEST_UPDATE_INTERVAL = 30000; // Every 30 seconds
+
+    /**
+     * The max time before batched results are delivered by location services. Results may be
+     * delivered sooner than this interval.
+     */
+    private static final long MAX_WAIT_TIME = UPDATE_INTERVAL * 5; // Every 5 minutes.
 
 
     private static final String ARG_SECTION_NUMBER = "section_number";
@@ -167,16 +192,43 @@ public class TrackerFragment extends Fragment{
                         helper_fab = true;
                         PeriodicWorkRequest geoWorkRequest = new PeriodicWorkRequest.Builder(GeoWorker.class, 15, TimeUnit.MINUTES ).addTag("geoTask").build(); //1, TimeUnit.MINUTES
                         WorkManager.getInstance(getContext()).enqueue(geoWorkRequest);
+                        OneTimeWorkRequest oneTimeWorkRequest = new OneTimeWorkRequest.Builder(GeoWorker2. class).addTag("geoTask").build();
+                        WorkManager.getInstance(getContext()).enqueue(oneTimeWorkRequest);
+
                     }
                 }
             });
+        zoom = binding.getRoot().findViewById(R.id.seekBar);
+        zoom.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                switch (event.getAction()){
+                    case MotionEvent.ACTION_DOWN:
+                        x = event.getX();
+                        y = event.getY();
+                        break;
+                    case MotionEvent.ACTION_MOVE:
+                        if (event.getY() < y) {
+                            map_observer.moveCamera(CameraUpdateFactory.zoomTo(map_observer.getCameraPosition().zoom + 0.05f));
+                            y = event.getY();
+                        }
+                        else if (event.getY() > y) {
+                            map_observer.moveCamera(CameraUpdateFactory.zoomTo(map_observer.getCameraPosition().zoom - 0.05f));
+                            y = event.getY();
+                        }
+                        break;
+
+                }
+                return true;
+            }
+        });
 
     }
 
     private OnMapReadyCallback callback = new OnMapReadyCallback() {
         @Override
         public void onMapReady(GoogleMap map) {
-
+            map_observer = map;
             if(mSettings.contains("tracker_map_style")){
                 String style = mSettings.getString("tracker_map_style","");
                 if (style.equals("tracker_grayscale"))
@@ -292,6 +344,7 @@ public class TrackerFragment extends Fragment{
             LatLng coords;
             while (trackerIterator.hasNext()){
                 Tracker tracker = trackerIterator.next();
+                Log.e("Tracker", ""+ tracker.latitude);
                 if(lat != 0d)
                 {
                     LatLng temp = new LatLng(lat, longit);
@@ -311,4 +364,75 @@ public class TrackerFragment extends Fragment{
 
 
         }
+    private void createLocationRequest() {
+        mLocationRequest = new LocationRequest();
+
+        // Sets the desired interval for active location updates. This interval is
+        // inexact. You may not receive updates at all if no location sources are available, or
+        // you may receive them slower than requested. You may also receive updates faster than
+        // requested if other applications are requesting location at a faster interval.
+        // Note: apps running on "O" devices (regardless of targetSdkVersion) may receive updates
+        // less frequently than this interval when the app is no longer in the foreground.
+        mLocationRequest.setInterval(UPDATE_INTERVAL);
+
+        // Sets the fastest rate for active location updates. This interval is exact, and your
+        // application will never receive updates faster than this value.
+        mLocationRequest.setFastestInterval(FASTEST_UPDATE_INTERVAL);
+
+        mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+
+        // Sets the maximum time when batched location updates are delivered. Updates may be
+        // delivered sooner than this interval.
+        mLocationRequest.setMaxWaitTime(MAX_WAIT_TIME);
+    }
+
+    private PendingIntent getPendingIntent() {
+        // Note: for apps targeting API level 25 ("Nougat") or lower, either
+        // PendingIntent.getService() or PendingIntent.getBroadcast() may be used when requesting
+        // location updates. For apps targeting API level O, only
+        // PendingIntent.getBroadcast() should be used. This is due to the limits placed on services
+        // started in the background in "O".
+
+        // TODO(developer): uncomment to use PendingIntent.getService().
+//        Intent intent = new Intent(this, LocationUpdatesIntentService.class);
+//        intent.setAction(LocationUpdatesIntentService.ACTION_PROCESS_UPDATES);
+//        return PendingIntent.getService(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+        Intent intent = new Intent(getContext(), LocationUpdatesBroadcastReceiver.class);
+        intent.setAction(LocationUpdatesBroadcastReceiver.ACTION_PROCESS_UPDATES);
+        return PendingIntent.getBroadcast(getContext(), 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+    }
+
+    //TODO: Потом можно чекнуть интент сервис как работает, пока не нужно
+    @Override
+    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String s) {
+        if (s.equals(Utils.KEY_LOCATION_UPDATES_RESULT)) {
+            //mLocationUpdatesResultView.setText(Utils.getLocationUpdatesResult(getContext()));
+        } else if (s.equals(Utils.KEY_LOCATION_UPDATES_REQUESTED)) {
+            //updateButtonsState(Utils.getRequestingLocationUpdates(getContext()));
+        }
+    }
+
+    /**
+     * Handles the Request Updates button and requests start of location updates.
+     */
+    public void requestLocationUpdates(View view) {
+        try {
+            Log.i(TAG, "Starting location updates");
+            Utils.setRequestingLocationUpdates(getContext(), true);
+            fusedLocationProviderClient.requestLocationUpdates(mLocationRequest, getPendingIntent());
+        } catch (SecurityException e) {
+            Utils.setRequestingLocationUpdates(getContext(), false);
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Handles the Remove Updates button, and requests removal of location updates.
+     */
+    public void removeLocationUpdates(View view) {
+        Log.i(TAG, "Removing location updates");
+        Utils.setRequestingLocationUpdates(getContext(), false);
+        fusedLocationProviderClient.removeLocationUpdates(getPendingIntent());
+    }
 }

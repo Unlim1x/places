@@ -1,4 +1,4 @@
-package com.example.places;
+package com.example.places.room;
 
 import android.app.Application;
 

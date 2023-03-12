@@ -25,6 +25,6 @@ public interface TrackerDao {
     @Delete
     void delete(Tracker tracker);
 
-    @Query("DELETE FROM markers")
+    @Query("DELETE FROM tracker")
     void nukeTable();
 }
