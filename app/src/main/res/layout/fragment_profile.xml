@@ -5,7 +5,7 @@
     android:id="@+id/constraintLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.main.ProfileFragment">
+    tools:context="ru.lim1x.places.ui.main.ProfileFragment">
 
     <RelativeLayout
         android:layout_width="match_parent"
