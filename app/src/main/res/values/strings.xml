@@ -47,7 +47,7 @@
     <string name="tracker_header">Трекер</string>
     <string name="profile_header">Профиль</string>
     <string name="common_header">Общее</string>
-
+    <string name="unknown_location">Unknown location</string>
     <!-- Common Preferences -->
     <string name="app_theme">Тема приложения</string>
     <string name="sound_notification">Звук уведомлений</string>
@@ -65,5 +65,12 @@
     <string name="clear_history">Очистить историю</string>
     <string name="places_clear">Удалить все маркеры</string>
     <string name="tracker_clear">Удалить все маршруты</string>
+
+
+    <plurals name="num_locations_reported">
+        <item quantity="zero">No location reported</item>
+        <item quantity="one">One location reported</item>
+        <item quantity="other">%d locations reported</item>
+    </plurals>
 
 </resources>

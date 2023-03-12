@@ -21,6 +21,29 @@
             android:text="TextView"
             android:textSize="20sp" />
 
+        <TextView
+            android:id="@+id/friendlistText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/username"
+            android:layout_alignParentLeft="true"
+            android:layout_centerInParent="true"
+            android:layout_marginLeft="8dp"
+            android:layout_marginTop="4dp"
+            android:text="Список друзей"
+            android:textSize="20dp" />
+
+        <Button
+            android:id="@+id/add_friend_button"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:layout_alignBaseline="@+id/friendlistText"
+            android:layout_alignParentRight="true"
+            android:textSize="10dp"
+            android:textStyle="bold"
+            android:text="+"></Button>
+
+
         <ImageView
             android:id="@+id/avatar"
             android:layout_width="wrap_content"
@@ -32,6 +55,22 @@
 
 
             android:src="@drawable/user" />
+        <FrameLayout
+            android:id="@+id/frame_layout_profile"
+            android:layout_marginTop="36dp"
+            android:layout_marginBottom="24dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/username"
+            android:layout_above="@id/settings_button"
+            ><androidx.recyclerview.widget.RecyclerView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/friendsRV"
+            android:layout_centerInParent="true"></androidx.recyclerview.widget.RecyclerView></FrameLayout>
+
+
+
         <Button
             android:id="@+id/signin_button"
             android:layout_width="wrap_content"

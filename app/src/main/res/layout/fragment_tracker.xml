@@ -19,7 +19,7 @@
 
 
         <include layout="@layout/for_tracker_maps" />
-
+    <include layout="@layout/seekbar"/>
 
 
 
