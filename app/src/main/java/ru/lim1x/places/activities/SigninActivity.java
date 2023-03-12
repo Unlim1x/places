@@ -1,5 +1,6 @@
-package ru.lim1x.places;
+package ru.lim1x.places.activities;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.view.MenuItem;
 
@@ -7,8 +8,8 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.example.places.R;
-
+import ru.lim1x.places.R;
+import ru.lim1x.places.databinding.FragmentMainBinding;
 import ru.lim1x.places.ui.first_open.SignupFragment;
 
 public class SigninActivity extends AppCompatActivity {

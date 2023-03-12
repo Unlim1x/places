@@ -17,10 +17,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RelativeLayout;
 
-import ru.lim1x.places.App;
-import ru.lim1x.places.MainActivity;
-import ru.lim1x.places.MapsActivity;
-import com.example.places.R;
+import ru.lim1x.places.activities.MainActivity;
+import ru.lim1x.places.activities.MapsActivity;
+import ru.lim1x.places.databinding.FragmentTrackerBinding;
+import ru.lim1x.places.room.App;
+
+import ru.lim1x.places.R;
 import ru.lim1x.places.back.GeoWorker;
 import ru.lim1x.places.room.daos.TrackerDao;
 import ru.lim1x.places.room.database.PlacesDatabase;

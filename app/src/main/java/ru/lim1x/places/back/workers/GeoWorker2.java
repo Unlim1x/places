@@ -1,21 +1,23 @@
-package ru.lim1x.places.back;
+package ru.lim1x.places.back.workers;
 
 import android.Manifest;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.Location;
+import android.util.Log;
+
+import androidx.annotation.NonNull;
+import androidx.core.app.ActivityCompat;
+import androidx.work.OneTimeWorkRequest;
+import androidx.work.WorkManager;
+import androidx.work.Worker;
+import androidx.work.WorkerParameters;
 
 import ru.lim1x.places.room.App;
 import ru.lim1x.places.room.daos.TrackerDao;
 import ru.lim1x.places.room.database.PlacesDatabase;
 import ru.lim1x.places.room.entities.Tracker;
-
-import androidx.annotation.NonNull;
-import androidx.core.app.ActivityCompat;
-import androidx.work.Worker;
-import androidx.work.WorkerParameters;
-
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.Priority;
@@ -23,27 +25,48 @@ import com.google.android.gms.tasks.CancellationTokenSource;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 
-import android.util.Log;
-
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.concurrent.TimeUnit;
 
-public class GeoWorker extends Worker {
+public class GeoWorker2 extends Worker {
 
-
+    Task<Location> locationResult;
     private FusedLocationProviderClient fusedLocationProviderClient;
     Location location;
     PlacesDatabase database;
     TrackerDao trackerDao;
     private final CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
+    float color = 0;
+    int a = 0;
 
 
-    public GeoWorker(@NonNull Context context, @NonNull WorkerParameters workerParams) {
+    public GeoWorker2(@NonNull Context context, @NonNull WorkerParameters workerParams) {
         super(context, workerParams);
         database = App.getInstance().getDatabase();
         trackerDao = database.trackerDao();
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(getApplicationContext());
+
+        locationResult.addOnCompleteListener(new OnCompleteListener<Location>() {
+            @Override
+            public void onComplete(@NonNull Task<Location> task) {
+
+                location = task.getResult();
+                Tracker tracker = new Tracker();
+                tracker.latitude = location.getLatitude();
+                tracker.longitude = location.getLongitude();
+                tracker.title = String.valueOf(a);
+                tracker.snippet = "default";
+                tracker.color = color;
+                tracker.date = LocalDateTime.now().toString();
+                trackerDao.insert(tracker);
+                Log.e("GEO", "okay now, latitude= " + location.getLatitude() + "  longitude =" + location.getLongitude());
+                Log.i("Geo", "ends at" + LocalTime.now());
+
+
+            }
+        });
+
     }
 
     @NonNull
@@ -59,29 +82,12 @@ public class GeoWorker extends Worker {
                 Log.e("GEO", "SOMETHING WENT WRONG");
                 return Result.failure();
             }
-            Task<Location> locationResult = fusedLocationProviderClient.getCurrentLocation(Priority.PRIORITY_HIGH_ACCURACY, cancellationTokenSource.getToken());
-            int a = LocalDateTime.now().hashCode();
-            float color = (float) Math.random() * 359;
-
-            locationResult.addOnCompleteListener(new OnCompleteListener<Location>() {
-                @Override
-                public void onComplete(@NonNull Task<Location> task) {
-
-                        location = task.getResult();
-                        Tracker tracker = new Tracker();
-                        tracker.latitude = location.getLatitude();
-                        tracker.longitude = location.getLongitude();
-                        tracker.title = String.valueOf(a);
-                        tracker.snippet = "default";
-                        tracker.color = color;
-                        tracker.date = LocalDateTime.now().toString();
-                        trackerDao.insert(tracker);
-                        Log.e("GEO", "okay now, latitude= " + location.getLatitude() + "  longitude =" + location.getLongitude());
-                        Log.i("Geo", "ends at" + LocalTime.now());
+            a = LocalDateTime.now().hashCode();
+            color = (float) Math.random() * 359;
+            locationResult = fusedLocationProviderClient.getCurrentLocation(Priority.PRIORITY_HIGH_ACCURACY, cancellationTokenSource.getToken());
 
 
-                }
-            });
+
             try {
                 TimeUnit.MINUTES.sleep(mSettings.getInt("tracker_freq", 2));
             } catch (InterruptedException e) {
@@ -89,6 +95,13 @@ public class GeoWorker extends Worker {
             }
             i--;
         }
+        Runnable runnable = ()->{
+            OneTimeWorkRequest oneTimeWorkRequest = new OneTimeWorkRequest.Builder(GeoWorker2. class).addTag("geoTask").build();
+            WorkManager.getInstance(getApplicationContext()).enqueue(oneTimeWorkRequest);
+        };
+        Thread newWorkerThread = new Thread(runnable);
+        newWorkerThread.start();
+
 
 
         return Result.success();

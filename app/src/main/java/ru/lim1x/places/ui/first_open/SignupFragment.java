@@ -15,8 +15,9 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
-import ru.lim1x.places.App;
-import ru.lim1x.places.MainActivity;
+import ru.lim1x.places.activities.MainActivity;
+import ru.lim1x.places.databinding.FragmentSignupBinding;
+import ru.lim1x.places.room.App;
 import ru.lim1x.places.room.daos.InitAppDao;
 import ru.lim1x.places.room.daos.ProfileDao;
 import ru.lim1x.places.room.database.PlacesDatabase;

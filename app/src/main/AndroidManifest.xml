@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.places">
+    package="ru.lim1x.places">
 
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
@@ -8,7 +8,7 @@
     <uses-permission android:name="android.permission.INTERNET" />
 
     <application
-        android:name="ru.lim1x.places.App"
+        android:name="ru.lim1x.places.room.App"
         android:allowBackup="true"
         android:icon="@mipmap/main_ico"
         android:label="@string/app_name"
@@ -16,16 +16,6 @@
         android:supportsRtl="true"
 
         android:theme="@style/Theme.Places">
-        <activity
-            android:name="ru.lim1x.places.SettingsActivity"
-            android:exported="false"
-            android:label="@string/title_activity_settings" />
-        <activity
-            android:name="ru.lim1x.places.SigninActivity"
-            android:exported="false"
-            android:label="@string/title_activity_signin" />
-
-
 
 
         <!--
@@ -37,19 +27,6 @@
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyCd41NcKGeylMpBOrGn1J8wh8mp3YkA-MA" />
-
-        <activity
-            android:name="ru.lim1x.places.MainActivity"
-            android:exported="true"
-            android:label="@string/title_activity_main"
-            android:theme="@style/Theme.Places.NoActionBar">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
-
 
 
     </application>

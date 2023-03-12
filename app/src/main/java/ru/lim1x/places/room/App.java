@@ -1,4 +1,4 @@
-package ru.lim1x.places;
+package ru.lim1x.places.room;
 
 import android.app.Application;
 

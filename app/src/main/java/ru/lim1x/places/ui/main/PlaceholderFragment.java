@@ -8,6 +8,8 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
+import ru.lim1x.places.databinding.FragmentMainBinding;
+
 
 /**
  * A placeholder fragment containing a simple view.

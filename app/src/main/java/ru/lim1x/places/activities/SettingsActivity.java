@@ -1,4 +1,4 @@
-package ru.lim1x.places;
+package ru.lim1x.places.activities;
 
 import android.content.Context;
 import android.content.DialogInterface;
@@ -24,11 +24,11 @@ import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.PreferenceScreen;
 
+import ru.lim1x.places.R;
+import ru.lim1x.places.room.App;
 import ru.lim1x.places.room.daos.MarkerDao;
 import ru.lim1x.places.room.daos.TrackerDao;
 import ru.lim1x.places.room.database.PlacesDatabase;
-
-import com.example.places.R;
 
 public class SettingsActivity extends AppCompatActivity {
     Preference pf;
