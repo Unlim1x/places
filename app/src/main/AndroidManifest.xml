@@ -16,6 +16,16 @@
         android:supportsRtl="true"
 
         android:theme="@style/Theme.Places">
+        <activity
+            android:name="ru.lim1x.places.activities.SettingsActivity"
+            android:exported="false"
+            android:label="@string/title_activity_settings" />
+        <activity
+            android:name="ru.lim1x.places.activities.SigninActivity"
+            android:exported="false"
+            android:label="@string/title_activity_signin" />
+
+
 
 
         <!--
@@ -27,6 +37,19 @@
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyCd41NcKGeylMpBOrGn1J8wh8mp3YkA-MA" />
+
+        <activity
+            android:name="ru.lim1x.places.activities.MainActivity"
+            android:exported="true"
+            android:label="@string/title_activity_main"
+            android:theme="@style/Theme.Places.NoActionBar">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
 
 
     </application>
