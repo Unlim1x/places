@@ -10,6 +10,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -331,11 +332,12 @@ public class SignupFragment extends Fragment {
 
 
     private void sendPhone(String phone){
-       //TODO: Надо какой-то апи найти для отправки смс. Я пока не понимаю как.
         CompletableFuture.runAsync(() -> {
             client.setCode(CodeGenerator.generateCode());
             client.setPhone(phone);
-            client.send();
+            //client.send();
+            Toast msg = Toast.makeText(getContext(), client.getCode(), Toast.LENGTH_LONG);
+            msg.show();
         });
     }
     private boolean sendCode(String phone, String code) throws ExecutionException, InterruptedException {

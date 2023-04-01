@@ -10,6 +10,13 @@
             app:key="theme"
             app:title="@string/app_theme"
             app:useSimpleSummaryProvider="true" />
+        <ListPreference
+            app:defaultValue="google_mapkit"
+            app:entries="@array/mapkit_entries"
+            app:entryValues="@array/mapkit_values"
+            app:key="mapkit"
+            app:title="@string/mapkit"
+            app:useSimpleSummaryProvider="true" />
 
         <PreferenceScreen
             android:summary="Разрешите фоновую локацию"

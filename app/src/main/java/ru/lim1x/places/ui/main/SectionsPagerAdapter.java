@@ -9,6 +9,7 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentPagerAdapter;
 
 import ru.lim1x.places.R;
+import ru.lim1x.places.ui.main.places.PlacesFragmentView;
 
 /**
  * A [FragmentPagerAdapter] that returns a fragment corresponding to
@@ -30,7 +31,8 @@ public class SectionsPagerAdapter extends FragmentPagerAdapter {
         // getItem is called to instantiate the fragment for the given page.
         // Return a PlaceholderFragment (defined as a static inner class below).
         if (position == 0)
-            return PlacesFragment.newInstance(position + 1, mContext);
+            //return PlacesFragment.newInstance(position + 1, mContext);
+            return PlacesFragmentView.Companion.newInstance(position+1);
         if (position == 1)
             return TrackerFragment.newInstance(position +1, mContext);
         if(position == 2)

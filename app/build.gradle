@@ -45,6 +45,9 @@ android {
 
 dependencies {
 
+    // https://mvnrepository.com/artifact/com.android.tools.build/gradle
+
+
     implementation 'androidx.appcompat:appcompat:1.6.1'
     implementation 'com.google.android.material:material:1.8.0'
     implementation 'com.google.android.gms:play-services-maps:18.1.0'
@@ -74,6 +77,8 @@ dependencies {
     implementation 'com.google.android.gms:play-services-auth-api-phone:18.0.1'
 
     implementation 'com.squareup.okhttp3:okhttp:4.10.0'
+
+    implementation 'com.yandex.android:maps.mobile:4.3.1-full'
 
 
     //testImplementation 'junit:junit:4.13.2'

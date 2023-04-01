@@ -120,6 +120,19 @@ public class SettingsActivity extends AppCompatActivity {
                     return false;
                 }
             });
+            ListPreference mapkit = getPreferenceManager().findPreference("mapkit");
+            mapkit.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+                @Override
+                public boolean onPreferenceChange(@NonNull Preference preference, Object newValue) {
+                    SharedPreferences.Editor editor = getActivity().getSharedPreferences("s1paraX", Context.MODE_PRIVATE).edit();
+                    editor.putString("mapkit", newValue.toString());
+                    editor.apply();
+                    mapkit.setValue(newValue.toString());
+                    return true;
+                }
+            });
+
+
 
             ListPreference places_map_style = getPreferenceManager().findPreference("places_map_style");
             places_map_style.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
@@ -280,6 +293,7 @@ public class SettingsActivity extends AppCompatActivity {
                     return true;
                 }
             });
+
 
 
         }

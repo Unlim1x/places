@@ -14,8 +14,13 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_app_ico_round"
         android:supportsRtl="true"
-
         android:theme="@style/Theme.Places">
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="AIzaSyCd41NcKGeylMpBOrGn1J8wh8mp3YkA-MA" />
+        <meta-data
+            android:name="com.yandex.API_KEY"
+            android:value="a5b650e8-16b6-49f9-afe8-d7694c035651" />
         <activity
             android:name="ru.lim1x.places.activities.SettingsActivity"
             android:exported="false"
@@ -25,24 +30,15 @@
             android:exported="false"
             android:label="@string/title_activity_signin" />
 
-
-
-
-        <!--
-             <service
-            android:name=".back.GeoService"
-            android:enabled="true"
-            android:exported="true" />
-        -->
-        <meta-data
-            android:name="com.google.android.geo.API_KEY"
-            android:value="AIzaSyCd41NcKGeylMpBOrGn1J8wh8mp3YkA-MA" />
-
         <activity
             android:name="ru.lim1x.places.activities.MainActivity"
             android:exported="true"
             android:label="@string/title_activity_main"
             android:theme="@style/Theme.Places.NoActionBar">
+            <meta-data
+                android:name="com.yandex.API_KEY"
+                android:value="a5b650e8-16b6-49f9-afe8-d7694c035651" />
+
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

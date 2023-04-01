@@ -64,7 +64,8 @@ import java.util.List;
  * НЕОБХОДИМО ДЕЛИТЬСЯ МЕСТАМИ
  * НЕОБХОДИМО СДЕЛАТЬ КАК-ТО ОТМЕЧАНИЕ ПОСЕЩЕННЫХ МЕСТ
  */
-public class MapsActivity extends AppCompatActivity
+@Deprecated
+public class GoogleMapsActivity extends AppCompatActivity
         implements OnInfoWindowCloseListener, OnMarkerClickListener, OnMarkerDragListener,
                     OnInfoWindowClickListener, OnMapLongClickListener, OnMapReadyCallback {
 
@@ -73,7 +74,7 @@ public class MapsActivity extends AppCompatActivity
     private int marker_counter = 0;
     SQLiteDatabase database;
 
-    private static final String TAG = MapsActivity.class.getSimpleName();
+    private static final String TAG = GoogleMapsActivity.class.getSimpleName();
     private GoogleMap map;
     private CameraPosition cameraPosition;
 
@@ -130,7 +131,7 @@ public class MapsActivity extends AppCompatActivity
 
         // Retrieve the content view that renders the map.
 
-        setContentView(R.layout.fragment_places);
+        setContentView(R.layout.fragment_places_google);
 
         llBottomSheet = (LinearLayout) findViewById(R.id.bottom_sheet);
         bottomSheetBehavior = BottomSheetBehavior.from(llBottomSheet);
@@ -149,7 +150,7 @@ public class MapsActivity extends AppCompatActivity
         // Build the map.
         // [START maps_current_place_map_fragment]
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
-                .findFragmentById(R.id.map);
+                .findFragmentById(R.id.google_map);
         mapFragment.getMapAsync(this);
 
         // [END maps_current_place_map_fragment]
@@ -232,7 +233,7 @@ public class MapsActivity extends AppCompatActivity
             public View getInfoContents(Marker marker) {
                 // Inflate the layouts for the info window, title and snippet.
                 View infoWindow = getLayoutInflater().inflate(R.layout.custom_info_contents,
-                        (FrameLayout) findViewById(R.id.map), false);
+                        (FrameLayout) findViewById(R.id.google_map), false);
 
                 TextView title = infoWindow.findViewById(R.id.title);
                 title.setText(marker.getTitle());
@@ -400,7 +401,7 @@ public class MapsActivity extends AppCompatActivity
 
                         // Show a dialog offering the user the list of likely places, and add a
                         // marker at the selected place.
-                        MapsActivity.this.openPlacesDialog();
+                        GoogleMapsActivity.this.openPlacesDialog();
                     }
                     else {
                         Log.e(TAG, "Exception: %s", task.getException());

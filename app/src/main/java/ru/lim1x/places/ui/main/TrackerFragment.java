@@ -18,7 +18,7 @@ import android.view.ViewGroup;
 import android.widget.RelativeLayout;
 
 import ru.lim1x.places.activities.MainActivity;
-import ru.lim1x.places.activities.MapsActivity;
+import ru.lim1x.places.activities.GoogleMapsActivity;
 import ru.lim1x.places.databinding.FragmentTrackerBinding;
 import ru.lim1x.places.room.App;
 
@@ -60,7 +60,7 @@ public class TrackerFragment extends Fragment{
 
     private static final String ARG_SECTION_NUMBER = "section_number";
 
-    private static final String TAG = MapsActivity.class.getSimpleName();
+    private static final String TAG = GoogleMapsActivity.class.getSimpleName();
     FragmentTrackerBinding binding;
     private static final String ARG_PARAM1 = "param1";
     private PlacesDatabase database;

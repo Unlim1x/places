@@ -17,6 +17,8 @@ import ru.lim1x.places.ui.first_open.EntryFragment;
 import ru.lim1x.places.ui.first_open.SignupFragment;
 
 import com.google.android.material.tabs.TabLayout;
+import com.yandex.mapkit.MapKitFactory;
+
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatDelegate;
@@ -56,6 +58,8 @@ public class MainActivity extends AppCompatActivity  {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+
+        //MapKitFactory.setApiKey("a5b650e8-16b6-49f9-afe8-d7694c035651");
         mSettings = getSharedPreferences("s1paraX", Context.MODE_PRIVATE);
         boolean light_theme = mSettings.getBoolean("light_theme", false);
         boolean dark_theme = mSettings.getBoolean("dark_theme", false);
