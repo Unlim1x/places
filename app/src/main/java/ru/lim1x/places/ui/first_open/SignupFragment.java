@@ -32,6 +32,7 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
+import java.util.Objects;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.CompletableFuture;
@@ -181,6 +182,7 @@ public class SignupFragment extends Fragment {
                     change_number.setVisibility(View.INVISIBLE);
                     textResendCode.setVisibility(View.VISIBLE);
 
+
                     code.setVisibility(View.VISIBLE);
                     //binding.layoutWithCode.setVisibility(View.VISIBLE);
 
@@ -327,17 +329,15 @@ public class SignupFragment extends Fragment {
     }
 
 
-
-
-
-
     private void sendPhone(String phone){
         CompletableFuture.runAsync(() -> {
             client.setCode(CodeGenerator.generateCode());
             client.setPhone(phone);
+            requireActivity().runOnUiThread(() -> {
+                Toast msg = Toast.makeText(getContext(), client.getCode(), Toast.LENGTH_LONG);
+                msg.show();
+            });
             //client.send();
-            Toast msg = Toast.makeText(getContext(), client.getCode(), Toast.LENGTH_LONG);
-            msg.show();
         });
     }
     private boolean sendCode(String phone, String code) throws ExecutionException, InterruptedException {

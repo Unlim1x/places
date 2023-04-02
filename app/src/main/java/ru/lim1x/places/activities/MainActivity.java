@@ -17,6 +17,7 @@ import ru.lim1x.places.ui.first_open.EntryFragment;
 import ru.lim1x.places.ui.first_open.SignupFragment;
 
 import com.google.android.material.tabs.TabLayout;
+import com.google.android.material.tabs.TabLayoutMediator;
 import com.yandex.mapkit.MapKitFactory;
 
 
@@ -24,14 +25,21 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.fragment.app.Fragment;
 import androidx.viewpager.widget.ViewPager;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.viewpager2.widget.ViewPager2;
 
 import android.util.Log;
 
+import ru.lim1x.places.ui.main.ProfileFragment;
 import ru.lim1x.places.ui.main.SectionsPagerAdapter;
 import ru.lim1x.places.databinding.ActivityMainBinding;
+import ru.lim1x.places.ui.main.TrackerFragment;
+import ru.lim1x.places.ui.main.ViewPager2Adapter;
+import ru.lim1x.places.ui.main.places.PlacesFragmentView;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
@@ -100,6 +108,10 @@ public class MainActivity extends AppCompatActivity  {
                 viewPager.setAdapter(sectionsPagerAdapter);
                 TabLayout tabs = binding.tabs;
                 tabs.setupWithViewPager(viewPager);
+
+
+
+
 
                 bundle = new Bundle();
 

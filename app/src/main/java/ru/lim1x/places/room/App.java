@@ -1,6 +1,9 @@
 package ru.lim1x.places.room;
 
 import android.app.Application;
+import android.content.pm.PackageManager;
+import android.os.Build;
+import android.os.Bundle;
 
 import androidx.room.Room;
 
@@ -14,6 +17,18 @@ public class App extends Application {
 
     @Override
     public void onCreate(){
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            Bundle bundle;
+            try {
+                bundle = getPackageManager().getApplicationInfo(getPackageName()
+                        , PackageManager.ApplicationInfoFlags.of(PackageManager.GET_META_DATA)).metaData;
+                if (!bundle.isEmpty()){
+                    MapKitFactory.setApiKey(bundle.getString("com.yandex.API_KEY"));
+                }
+            } catch (PackageManager.NameNotFoundException e) {
+                throw new RuntimeException(e);
+            }
+        }
         MapKitFactory.setApiKey("a5b650e8-16b6-49f9-afe8-d7694c035651");
         super.onCreate();
         instance = this;
