@@ -17,11 +17,14 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 
-import ru.lim1x.places.App;
-import ru.lim1x.places.MainActivity;
-import com.example.places.R;
-import ru.lim1x.places.SettingsActivity;
-import ru.lim1x.places.SigninActivity;
+import ru.lim1x.places.activities.MainActivity;
+import ru.lim1x.places.activities.SettingsActivity;
+import ru.lim1x.places.activities.SigninActivity;
+import ru.lim1x.places.databinding.FragmentProfileBinding;
+import ru.lim1x.places.room.App;
+
+import ru.lim1x.places.R;
+
 import ru.lim1x.places.room.daos.MarkerDao;
 import ru.lim1x.places.room.daos.ProfileDao;
 import ru.lim1x.places.room.daos.TrackerDao;

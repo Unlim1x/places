@@ -4,14 +4,17 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="ru.lim1x.places.ui.main.PlacesFragment">
+    tools:context="ru.lim1x.places.ui.main.places.PlacesFragmentView">
 
 
 
     <!-- подключение нижнего экрана -->
-    <include layout="@layout/activity_maps"/>
+    <include layout="@layout/google_maps_layout"/>
+
+
+    <include layout="@layout/seekbar" />
+
     <include layout="@layout/bottom_sheet" />
-    <include layout="@layout/seekbar"/>
 
 
 

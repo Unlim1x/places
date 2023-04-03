@@ -12,6 +12,16 @@
         <item>dark_theme</item>
     </string-array>
 
+    <string-array name="mapkit_entries">
+        <item>Google</item>
+        <item>Yandex</item>
+    </string-array>
+
+    <string-array name="mapkit_values">
+        <item>google_mapkit</item>
+        <item>yandex_mapkit</item>
+    </string-array>
+
     <string-array name="map_style_entries">
         <item>Классическая</item>
         <item>Оттенки серого</item>

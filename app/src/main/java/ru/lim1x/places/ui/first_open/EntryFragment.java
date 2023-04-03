@@ -19,9 +19,11 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
-import ru.lim1x.places.App;
-import ru.lim1x.places.MainActivity;
-import com.example.places.R;
+import ru.lim1x.places.activities.MainActivity;
+import ru.lim1x.places.databinding.FragmentEntryBinding;
+import ru.lim1x.places.room.App;
+
+import ru.lim1x.places.R;
 
 import ru.lim1x.places.room.daos.InitAppDao;
 import ru.lim1x.places.room.daos.ProfileDao;

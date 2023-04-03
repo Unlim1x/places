@@ -20,9 +20,9 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 
-import ru.lim1x.places.App;
-import ru.lim1x.places.MainActivity;
-import ru.lim1x.places.MapsActivity;
+import ru.lim1x.places.activities.MainActivity;
+import ru.lim1x.places.databinding.FragmentPlacesGoogleBinding;
+import ru.lim1x.places.room.App;
 import ru.lim1x.places.room.daos.MarkerDao;
 import ru.lim1x.places.room.database.PlacesDatabase;
 import ru.lim1x.places.room.entities.Markers;
@@ -36,7 +36,7 @@ import com.google.android.gms.maps.GoogleMap.OnMarkerClickListener;
 import com.google.android.gms.maps.GoogleMap.OnInfoWindowClickListener;
 import com.google.android.gms.maps.GoogleMap.OnInfoWindowCloseListener;
 import com.google.android.gms.maps.GoogleMap.OnMarkerDragListener;
-import com.example.places.R;
+import ru.lim1x.places.R;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
@@ -59,6 +59,7 @@ import java.util.List;
 /**
  * A placeholder fragment containing a simple view.
  */
+@Deprecated
 public class PlacesFragment extends Fragment {
 
     Context mContext;
@@ -69,7 +70,7 @@ public class PlacesFragment extends Fragment {
     private LinearLayout llBottomSheet;
     private BottomSheetBehavior bottomSheetBehavior;
     private int marker_counter = 0;
-    private static final String TAG = MapsActivity.class.getSimpleName();
+
     public GoogleMap map_observer;
     private CameraPosition cameraPosition;
     // The entry point to the Places API.
@@ -103,7 +104,7 @@ public class PlacesFragment extends Fragment {
     private LatLng[] likelyPlaceLatLngs;
 
 
-    private FragmentPlacesBinding binding;
+    private FragmentPlacesGoogleBinding binding;
     public PlacesFragment(){}
     public PlacesFragment(Context context){
         mContext = context;
@@ -130,7 +131,7 @@ public class PlacesFragment extends Fragment {
             Bundle savedInstanceState) {
         mContext = getContext();
         View root;
-        binding = FragmentPlacesBinding.inflate(inflater, container, false);
+        binding = FragmentPlacesGoogleBinding.inflate(inflater, container, false);
         root = binding.getRoot();
         database = App.getInstance().getDatabase();
         markerDao = database.markerDao();
@@ -149,7 +150,7 @@ public class PlacesFragment extends Fragment {
         bottomSheetBehavior = BottomSheetBehavior.from(llBottomSheet);
         bottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
         SupportMapFragment mapFragment =
-                (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
+                (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.google_map);
         if (mapFragment != null) {
             mapFragment.getMapAsync(callback);
         }
@@ -167,6 +168,7 @@ public class PlacesFragment extends Fragment {
                 if (style.equals("night"))
                     map.setMapStyle(MapStyleOptions.loadRawResourceStyle(getContext(), R.raw.night));
             }
+
 
 
             map.setOnMapLongClickListener(new OnMapLongClickListener() {
@@ -290,7 +292,7 @@ public class PlacesFragment extends Fragment {
                 public View getInfoContents(Marker marker) {
                     // Inflate the layouts for the info window, title and snippet.
                     View infoWindow = getLayoutInflater().inflate(R.layout.custom_info_contents,
-                            (FrameLayout) getView().findViewById(R.id.map), false);
+                            (FrameLayout) getView().findViewById(R.id.google_map), false);
 
                     TextView title = infoWindow.findViewById(R.id.title);
                     title.setText(marker.getTitle());
@@ -366,8 +368,7 @@ public class PlacesFragment extends Fragment {
                                                 lastKnownLocation.getLongitude()), DEFAULT_ZOOM));
                             }
                         } else {
-                            Log.d(TAG, "Current location is null. Using defaults.");
-                            Log.e(TAG, "Exception: %s", task.getException());
+
                             map.moveCamera(CameraUpdateFactory
                                     .newLatLngZoom(defaultLocation, DEFAULT_ZOOM));
                             map.getUiSettings().setMyLocationButtonEnabled(false);
@@ -408,8 +409,7 @@ public class PlacesFragment extends Fragment {
                                 putmarkerDB(current.latitude, current.longitude, "Я был тут #"+marker_counter, String.valueOf(a), true, color); //ТОЖЕ ПЕРЕПИСАТЬ НАДО БЫ
                             }
                         } else {
-                            Log.d(TAG, "Current location is null. Using defaults.");
-                            Log.e(TAG, "Exception: %s", task.getException());
+
                             map.moveCamera(CameraUpdateFactory
                                     .newLatLngZoom(defaultLocation, DEFAULT_ZOOM));
                             map.getUiSettings().setMyLocationButtonEnabled(false);

@@ -50,6 +50,7 @@
     <string name="unknown_location">Unknown location</string>
     <!-- Common Preferences -->
     <string name="app_theme">Тема приложения</string>
+    <string name="mapkit">Карта приложения</string>
     <string name="sound_notification">Звук уведомлений</string>
     <!-- Sync Preferences -->
     <string name="sync_title">Sync email periodically</string>

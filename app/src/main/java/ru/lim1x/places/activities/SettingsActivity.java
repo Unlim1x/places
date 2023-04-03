@@ -1,4 +1,4 @@
-package ru.lim1x.places;
+package ru.lim1x.places.activities;
 
 import android.content.Context;
 import android.content.DialogInterface;
@@ -24,11 +24,11 @@ import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.PreferenceScreen;
 
+import ru.lim1x.places.R;
+import ru.lim1x.places.room.App;
 import ru.lim1x.places.room.daos.MarkerDao;
 import ru.lim1x.places.room.daos.TrackerDao;
 import ru.lim1x.places.room.database.PlacesDatabase;
-
-import com.example.places.R;
 
 public class SettingsActivity extends AppCompatActivity {
     Preference pf;
@@ -120,6 +120,19 @@ public class SettingsActivity extends AppCompatActivity {
                     return false;
                 }
             });
+            ListPreference mapkit = getPreferenceManager().findPreference("mapkit");
+            mapkit.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+                @Override
+                public boolean onPreferenceChange(@NonNull Preference preference, Object newValue) {
+                    SharedPreferences.Editor editor = getActivity().getSharedPreferences("s1paraX", Context.MODE_PRIVATE).edit();
+                    editor.putString("mapkit", newValue.toString());
+                    editor.apply();
+                    mapkit.setValue(newValue.toString());
+                    return true;
+                }
+            });
+
+
 
             ListPreference places_map_style = getPreferenceManager().findPreference("places_map_style");
             places_map_style.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
@@ -280,6 +293,7 @@ public class SettingsActivity extends AppCompatActivity {
                     return true;
                 }
             });
+
 
 
         }

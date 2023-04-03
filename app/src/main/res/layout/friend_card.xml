@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:adjustViewBounds="true"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/cv"
+    app:cardCornerRadius="5dp"
+    android:elevation="10dp"
+    app:cardUseCompatPadding="true">
+
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <ImageView
+            android:id="@+id/friendImage"
+            android:layout_width="64dp"
+            android:layout_height="64dp"
+            android:layout_marginStart="16dp"
+
+
+            app:srcCompat="@drawable/user" />
+
+        <TextView
+            android:id="@+id/friendName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="TextView"
+            android:textSize="24dp"
+            android:layout_toRightOf="@id/friendImage"
+            android:layout_alignParentRight="true"
+            android:textAlignment="center"
+             />
+
+
+
+        <TextView
+            android:id="@+id/friendPhone"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/friendName"
+            android:layout_alignParentRight="true"
+            android:layout_toRightOf="@id/friendImage"
+            android:layout_marginTop="8dp"
+            android:textAlignment="center"
+            android:textSize="20dp"
+            android:text="TextView"
+
+             />
+    </RelativeLayout>
+</androidx.cardview.widget.CardView>

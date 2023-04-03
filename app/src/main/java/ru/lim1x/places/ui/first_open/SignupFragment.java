@@ -10,13 +10,17 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
-import ru.lim1x.places.App;
-import ru.lim1x.places.MainActivity;
+import ru.lim1x.places.activities.MainActivity;
+import ru.lim1x.places.back.http.CodeGenerator;
+import ru.lim1x.places.back.http.PClient;
+import ru.lim1x.places.databinding.FragmentSignupBinding;
+import ru.lim1x.places.room.App;
 import ru.lim1x.places.room.daos.InitAppDao;
 import ru.lim1x.places.room.daos.ProfileDao;
 import ru.lim1x.places.room.database.PlacesDatabase;
@@ -28,6 +32,7 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
+import java.util.Objects;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.CompletableFuture;
@@ -49,15 +54,13 @@ public class SignupFragment extends Fragment {
     Button resend_code;
     Timer buttonTimer;
     Timer textTimer;
+    PClient client;
     EditText[] otpETs = new EditText[6];
     boolean code_accepted = false;
-    int generated_code;
+
     byte time = 60;
     String phone_number_db;
-    private static final String server_host_i = "192.168.0.163";
-    private static final String server_host_in = "185.102.8.27";
-    public static final int server_port = 25565;
-
+    int attempts = 0;
     public SignupFragment(){
     }
 
@@ -113,6 +116,7 @@ public class SignupFragment extends Fragment {
         accept_code.setVisibility(View.INVISIBLE);
         incorrect_code.setVisibility(View.INVISIBLE);
         phone_number.setMaxEms(12);
+        client = new PClient();
 
         change_number.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -178,6 +182,7 @@ public class SignupFragment extends Fragment {
                     change_number.setVisibility(View.INVISIBLE);
                     textResendCode.setVisibility(View.VISIBLE);
 
+
                     code.setVisibility(View.VISIBLE);
                     //binding.layoutWithCode.setVisibility(View.VISIBLE);
 
@@ -217,9 +222,10 @@ public class SignupFragment extends Fragment {
                             }
 
                             Profile localProfile = profileDao.getLocal();
-                            localProfile.loggedout = 1;
-                            profileDao.update(localProfile);
-
+                            if(localProfile != null) {
+                                localProfile.loggedout = 1;
+                                profileDao.update(localProfile);
+                            }
                             Profile auth_profile = new Profile();
                             auth_profile.username = phone_number_db;
                             auth_profile.phone = phone_number_db;
@@ -319,55 +325,23 @@ public class SignupFragment extends Fragment {
     public void onStop(){
         super.onStop();
         if (myTimer != null)
-        myTimer.cancel();
+            myTimer.cancel();
 
     }
-
-
-
-
 
 
     private void sendPhone(String phone){
-       //TODO: Надо какой-то апи найти для отправки смс. Я пока не понимаю как.
-
-        CompletableFuture<Void> voidCompletableFuture;
-        voidCompletableFuture = CompletableFuture.runAsync(()->{
-            try {
-                Socket server = new Socket(server_host_in, server_port);
-                DataOutputStream dataOutputStream = new DataOutputStream(server.getOutputStream());
-                dataOutputStream.writeUTF("phone");
-                dataOutputStream.writeUTF(phone);
-                server.close();
-
-            } catch (IOException e) {
-                e.printStackTrace();
-                //TODO: Вывести сообщение о недоступности сервера
-            }
+        CompletableFuture.runAsync(() -> {
+            client.setCode(CodeGenerator.generateCode());
+            client.setPhone(phone);
+            requireActivity().runOnUiThread(() -> {
+                Toast msg = Toast.makeText(getContext(), client.getCode(), Toast.LENGTH_LONG);
+                msg.show();
+            });
+            //client.send();
         });
     }
     private boolean sendCode(String phone, String code) throws ExecutionException, InterruptedException {
-        //TODO: Надо какой-то апи найти для отправки смс. Я пока не понимаю как.
-        CompletableFuture<Boolean> supplier;
-        supplier = CompletableFuture.supplyAsync(()->{
-            try {
-                Socket server = new Socket(server_host_in, server_port);
-                DataOutputStream dataOutputStream = new DataOutputStream(server.getOutputStream());
-                DataInputStream dataInputStream = new DataInputStream(server.getInputStream());
-                dataOutputStream.writeUTF("code");
-                dataOutputStream.writeUTF(phone);
-                dataOutputStream.writeUTF(code);
-                boolean result = dataInputStream.readBoolean();
-                server.close();
-                return result;
-
-            } catch (IOException e) {
-                e.printStackTrace();
-                //TODO: Вывести сообщение о недоступности сервера
-            }
-            return false;
-        });
-
-        return supplier.get();
+        return code.equals(client.getCode());
     }
 }
