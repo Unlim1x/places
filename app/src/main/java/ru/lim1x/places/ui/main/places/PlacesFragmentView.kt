@@ -11,6 +11,7 @@ import android.view.ViewGroup
 import android.widget.LinearLayout
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
+import androidx.lifecycle.ViewModelProvider
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.libraries.places.api.Places
@@ -26,6 +27,7 @@ class PlacesFragmentView : Fragment(), PlacesInterface, OnMapReadyCallback {
     lateinit var mapkit: String
     private var llBottomSheet: LinearLayout? = null
     private var bottomSheetBehavior: BottomSheetBehavior<*>? = null
+
 
     override fun context(): Context? {
        return context
@@ -80,7 +82,7 @@ class PlacesFragmentView : Fragment(), PlacesInterface, OnMapReadyCallback {
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
-
+        sharedPreferences()
         if(mapkit == "yandex_mapkit"){
             outState.putBoolean("yandex_mapkit", true)
         }

@@ -222,9 +222,10 @@ public class SignupFragment extends Fragment {
                             }
 
                             Profile localProfile = profileDao.getLocal();
-                            localProfile.loggedout = 1;
-                            profileDao.update(localProfile);
-
+                            if(localProfile != null) {
+                                localProfile.loggedout = 1;
+                                profileDao.update(localProfile);
+                            }
                             Profile auth_profile = new Profile();
                             auth_profile.username = phone_number_db;
                             auth_profile.phone = phone_number_db;
