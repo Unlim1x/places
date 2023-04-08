@@ -11,6 +11,7 @@ import androidx.fragment.app.FragmentPagerAdapter;
 
 import ru.lim1x.places.R;
 import ru.lim1x.places.ui.main.places.PlacesFragmentView;
+import ru.lim1x.places.ui.main.tracker.TrackerFragment;
 
 /**
  * A [FragmentPagerAdapter] that returns a fragment corresponding to

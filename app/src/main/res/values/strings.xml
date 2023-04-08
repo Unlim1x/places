@@ -66,6 +66,8 @@
     <string name="clear_history">Очистить историю</string>
     <string name="places_clear">Удалить все маркеры</string>
     <string name="tracker_clear">Удалить все маршруты</string>
+    <string name="string_pull">^ Тянуть ^</string>
+    <string name="string_delete">Удалить</string>
 
 
     <plurals name="num_locations_reported">

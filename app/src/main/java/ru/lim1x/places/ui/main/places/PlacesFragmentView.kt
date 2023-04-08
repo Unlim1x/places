@@ -39,8 +39,6 @@ class PlacesFragmentView : Fragment(), PlacesInterface, OnMapReadyCallback {
         savedInstanceState: Bundle?
     ): View {
         Log.e("head", "onCreateView CALLED")
-        mSharedPreferences = sharedPreferences()
-            context?.let { Places.initialize(it, "AIzaSyCd41NcKGeylMpBOrGn1J8wh8mp3YkA-MA") }
         presenter = PlacesPresenter(this)
 
          return when (mapkit) {
@@ -65,6 +63,7 @@ class PlacesFragmentView : Fragment(), PlacesInterface, OnMapReadyCallback {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        mSharedPreferences = sharedPreferences()
         if(mapkit == "google_mapkit") {
             presenter.initGoogleMap()
         }
@@ -82,7 +81,6 @@ class PlacesFragmentView : Fragment(), PlacesInterface, OnMapReadyCallback {
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
-        sharedPreferences()
         if(mapkit == "yandex_mapkit"){
             outState.putBoolean("yandex_mapkit", true)
         }

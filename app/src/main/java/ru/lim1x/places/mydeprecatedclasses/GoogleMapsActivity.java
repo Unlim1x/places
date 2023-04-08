@@ -1,4 +1,4 @@
-package ru.lim1x.places.activities;
+package ru.lim1x.places.mydeprecatedclasses;
 
 import android.content.ContentValues;
 import android.content.DialogInterface;

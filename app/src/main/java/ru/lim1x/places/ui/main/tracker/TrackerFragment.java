@@ -1,4 +1,4 @@
-package ru.lim1x.places.ui.main;
+package ru.lim1x.places.ui.main.tracker;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -18,7 +18,7 @@ import android.view.ViewGroup;
 import android.widget.RelativeLayout;
 
 import ru.lim1x.places.activities.MainActivity;
-import ru.lim1x.places.activities.GoogleMapsActivity;
+import ru.lim1x.places.mydeprecatedclasses.GoogleMapsActivity;
 import ru.lim1x.places.databinding.FragmentTrackerBinding;
 import ru.lim1x.places.room.App;
 
@@ -51,9 +51,9 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
 /**
- * A simple {@link Fragment} subclass.
- * Use the {@link TrackerFragment#newInstance} factory method to
- * create an instance of this fragment.
+ * Вернемся к разработке трекера позже
+ *
+ *
  */
 public class TrackerFragment extends Fragment{
 
