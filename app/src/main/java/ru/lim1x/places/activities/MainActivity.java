@@ -17,29 +17,20 @@ import ru.lim1x.places.ui.first_open.EntryFragment;
 import ru.lim1x.places.ui.first_open.SignupFragment;
 
 import com.google.android.material.tabs.TabLayout;
-import com.google.android.material.tabs.TabLayoutMediator;
-import com.yandex.mapkit.MapKitFactory;
 
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
-import androidx.fragment.app.Fragment;
 import androidx.viewpager.widget.ViewPager;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.viewpager2.widget.ViewPager2;
 
 import android.util.Log;
 
-import ru.lim1x.places.ui.main.ProfileFragment;
 import ru.lim1x.places.ui.main.SectionsPagerAdapter;
 import ru.lim1x.places.databinding.ActivityMainBinding;
-import ru.lim1x.places.ui.main.TrackerFragment;
-import ru.lim1x.places.ui.main.ViewPager2Adapter;
-import ru.lim1x.places.ui.main.places.PlacesFragmentView;
 
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
@@ -66,8 +57,6 @@ public class MainActivity extends AppCompatActivity  {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-
-        //MapKitFactory.setApiKey("a5b650e8-16b6-49f9-afe8-d7694c035651");
         mSettings = getSharedPreferences("s1paraX", Context.MODE_PRIVATE);
         boolean light_theme = mSettings.getBoolean("light_theme", false);
         boolean dark_theme = mSettings.getBoolean("dark_theme", false);
@@ -96,7 +85,7 @@ public class MainActivity extends AppCompatActivity  {
                 fbinding = FragmentMainBinding.inflate(getLayoutInflater());
                 setContentView(fbinding.getRoot());
                 getSupportFragmentManager().beginTransaction()
-                        .add(R.id.container, new EntryFragment()) // or replace с теми же параметрами
+                        .add(R.id.container, new EntryFragment())
                         .commit();
 
             }
@@ -152,7 +141,7 @@ public class MainActivity extends AppCompatActivity  {
     public void openSignin(){
 
         getSupportFragmentManager().beginTransaction()
-                .replace(R.id.container, new SignupFragment()) // or replace с теми же параметрами
+                .replace(R.id.container, new SignupFragment())
                 .commit();
     }
 

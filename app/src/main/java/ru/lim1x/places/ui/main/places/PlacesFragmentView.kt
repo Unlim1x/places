@@ -11,10 +11,8 @@ import android.view.ViewGroup
 import android.widget.LinearLayout
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
-import androidx.lifecycle.ViewModelProvider
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
-import com.google.android.libraries.places.api.Places
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import ru.lim1x.places.R
 import ru.lim1x.places.databinding.FragmentPlacesGoogleBinding
@@ -22,7 +20,7 @@ import ru.lim1x.places.databinding.FragmentPlacesYandexBinding
 
 
 class PlacesFragmentView : Fragment(), PlacesInterface, OnMapReadyCallback {
-    private lateinit var presenter: PlacesPresenter
+    private lateinit var presenter: PlacesController
     private lateinit var mSharedPreferences: SharedPreferences
     lateinit var mapkit: String
     private var llBottomSheet: LinearLayout? = null
@@ -39,9 +37,7 @@ class PlacesFragmentView : Fragment(), PlacesInterface, OnMapReadyCallback {
         savedInstanceState: Bundle?
     ): View {
         Log.e("head", "onCreateView CALLED")
-        mSharedPreferences = sharedPreferences()
-            context?.let { Places.initialize(it, "AIzaSyCd41NcKGeylMpBOrGn1J8wh8mp3YkA-MA") }
-        presenter = PlacesPresenter(this)
+        presenter = PlacesController(this)
 
          return when (mapkit) {
              "google_mapkit" -> {
@@ -65,6 +61,7 @@ class PlacesFragmentView : Fragment(), PlacesInterface, OnMapReadyCallback {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        mSharedPreferences = sharedPreferences()
         if(mapkit == "google_mapkit") {
             presenter.initGoogleMap()
         }
@@ -82,7 +79,6 @@ class PlacesFragmentView : Fragment(), PlacesInterface, OnMapReadyCallback {
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
-        sharedPreferences()
         if(mapkit == "yandex_mapkit"){
             outState.putBoolean("yandex_mapkit", true)
         }

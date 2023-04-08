@@ -1,4 +1,4 @@
-package ru.lim1x.places.back;
+package ru.lim1x.places.back.workers;
 
 import android.Manifest;
 import android.content.Context;

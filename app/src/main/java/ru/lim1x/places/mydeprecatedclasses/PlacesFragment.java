@@ -1,4 +1,4 @@
-package ru.lim1x.places.ui.main;
+package ru.lim1x.places.mydeprecatedclasses;
 
 import android.content.Context;
 import android.content.DialogInterface;
@@ -57,7 +57,7 @@ import java.util.List;
 
 
 /**
- * A placeholder fragment containing a simple view.
+ * Класс PlacesFragment устарел, используйте PlacesFragmentView
  */
 @Deprecated
 public class PlacesFragment extends Fragment {
