@@ -29,7 +29,6 @@ public class App extends Application {
                 throw new RuntimeException(e);
             }
         }
-        MapKitFactory.setApiKey("a5b650e8-16b6-49f9-afe8-d7694c035651");
         super.onCreate();
         instance = this;
         database = Room.databaseBuilder(this, PlacesDatabase.class, "placesX.db").allowMainThreadQueries().build();

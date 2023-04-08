@@ -27,8 +27,6 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.yandex.mapkit.Animation
 import com.yandex.mapkit.MapKit
 import com.yandex.mapkit.MapKitFactory
-import com.yandex.mapkit.map.MapObjectCollection
-import com.yandex.mapkit.ScreenRect
 import com.yandex.mapkit.geometry.Point
 import com.yandex.mapkit.layers.GeoObjectTapEvent
 import com.yandex.mapkit.layers.GeoObjectTapListener
@@ -37,9 +35,6 @@ import com.yandex.mapkit.location.FilteringMode
 import com.yandex.mapkit.location.LocationListener
 import com.yandex.mapkit.location.LocationManager
 import com.yandex.mapkit.location.LocationStatus
-import com.yandex.mapkit.logo.Alignment
-import com.yandex.mapkit.logo.HorizontalAlignment
-import com.yandex.mapkit.logo.VerticalAlignment
 import com.yandex.mapkit.map.*
 import com.yandex.mapkit.map.CameraPosition
 import com.yandex.mapkit.map.Map
@@ -50,14 +45,13 @@ import com.yandex.mapkit.user_location.UserLocationView
 import com.yandex.runtime.image.ImageProvider
 import ru.lim1x.places.R
 import ru.lim1x.places.activities.MainActivity
-import ru.lim1x.places.back.YandexUtils
 import ru.lim1x.places.room.App
 import ru.lim1x.places.room.entities.Markers
 import ru.lim1x.places.ui.YandexStyles
 import java.time.LocalDateTime
 
 
-class PlacesPresenter constructor(val view: PlacesInterface) : UserLocationObjectListener,
+class PlacesController constructor(val view: PlacesInterface) : UserLocationObjectListener,
     GeoObjectTapListener, InputListener , CameraListener, MapObjectTapListener{
     lateinit var mapView: MapView
     lateinit var mSharedPreferences : SharedPreferences
@@ -113,21 +107,19 @@ class PlacesPresenter constructor(val view: PlacesInterface) : UserLocationObjec
             .getMetadataContainer()
             .getItem(GeoObjectSelectionMetadata::class.java)
         view.bottomSheetBehavior()?.state = BottomSheetBehavior.STATE_COLLAPSED
-        if (selectionMetadata != null) {
-            mapView.map.selectGeoObject(selectionMetadata.id, selectionMetadata.layerId)
-            val textViewH: TextView? = view.llbottomSheet()?.findViewById<TextView>(R.id.marker_header)
-            textViewH?.text = selectionMetadata.id
-            val textViewD: TextView? = view.llbottomSheet()?.findViewById<TextView>(R.id.marker_description)
-            textViewD?.text= "Описание маркера"
-            view.bottomSheetBehavior()?.state = BottomSheetBehavior.STATE_COLLAPSED
-            view.llbottomSheet()?.findViewById<View>(R.id.marker_delete_button)
-                ?.setOnClickListener(
-                    View.OnClickListener {
-                        //marker.isVisible = false
-                        //deletemarkerDB(marker)
-                    })
-            false
-        }
+        mapView.map.selectGeoObject(selectionMetadata.id, selectionMetadata.layerId)
+        val textViewH: TextView? = view.llbottomSheet()?.findViewById<TextView>(R.id.marker_header)
+        textViewH?.text = selectionMetadata.id
+        val textViewD: TextView? = view.llbottomSheet()?.findViewById<TextView>(R.id.marker_description)
+        textViewD?.text= "Описание маркера"
+        view.bottomSheetBehavior()?.state = BottomSheetBehavior.STATE_COLLAPSED
+        view.llbottomSheet()?.findViewById<View>(R.id.marker_delete_button)
+            ?.setOnClickListener(
+                View.OnClickListener {
+                    //marker.isVisible = false
+                    //deletemarkerDB(marker)
+                })
+        false
 
 
 
@@ -137,23 +129,21 @@ class PlacesPresenter constructor(val view: PlacesInterface) : UserLocationObjec
     override fun onMapObjectTap(p0: MapObject, p1: Point): Boolean {
 
         view.bottomSheetBehavior()?.state = BottomSheetBehavior.STATE_COLLAPSED
-        if (p1 != null) {
 
-            val textViewH: TextView? =
-                view.llbottomSheet()?.findViewById<TextView>(R.id.marker_header)
-            textViewH?.text = p1.latitude.toString().subSequence(0, 5)
-            val textViewD: TextView? =
-                view.llbottomSheet()?.findViewById<TextView>(R.id.marker_description)
-            textViewD?.text = "Описание маркера"
-            view.bottomSheetBehavior()?.state = BottomSheetBehavior.STATE_COLLAPSED
-            view.llbottomSheet()?.findViewById<View>(R.id.marker_delete_button)
-                ?.setOnClickListener(
-                    View.OnClickListener {
-                        //marker.isVisible = false
-                        //deletemarkerDB(marker)
-                    })
-        }
-          return false
+        val textViewH: TextView? =
+            view.llbottomSheet()?.findViewById<TextView>(R.id.marker_header)
+        textViewH?.text = p1.latitude.toString().subSequence(0, 5)
+        val textViewD: TextView? =
+            view.llbottomSheet()?.findViewById<TextView>(R.id.marker_description)
+        textViewD?.text = "Описание маркера"
+        view.bottomSheetBehavior()?.state = BottomSheetBehavior.STATE_COLLAPSED
+        view.llbottomSheet()?.findViewById<View>(R.id.marker_delete_button)
+            ?.setOnClickListener(
+                View.OnClickListener {
+                    //marker.isVisible = false
+                    //deletemarkerDB(marker)
+                })
+        return false
     }
 
     override fun onMapTap(p0: Map, p1: Point) {

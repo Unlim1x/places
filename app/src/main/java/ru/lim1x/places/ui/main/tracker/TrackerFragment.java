@@ -23,7 +23,7 @@ import ru.lim1x.places.databinding.FragmentTrackerBinding;
 import ru.lim1x.places.room.App;
 
 import ru.lim1x.places.R;
-import ru.lim1x.places.back.GeoWorker;
+import ru.lim1x.places.back.workers.GeoWorker;
 import ru.lim1x.places.room.daos.TrackerDao;
 import ru.lim1x.places.room.database.PlacesDatabase;
 import ru.lim1x.places.room.entities.Tracker;
