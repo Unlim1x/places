@@ -1,5 +1,6 @@
 package ru.lim1x.places.back.http
 
+import android.util.Log
 import okhttp3.*
 import java.io.IOException
 
@@ -7,7 +8,7 @@ class PClient() {
     var code = "123456"
     private val tryings = 0
     var phone = "empty"
-    val apikey = "2DUWCL38JE0Z7PT7DNC0BC582EQ33XUBR0RPHCTDY940FQO2OTKG3T213SULQ5HG"
+    private val apikey = "2DUWCL38JE0Z7PT7DNC0BC582EQ33XUBR0RPHCTDY940FQO2OTKG3T213SULQ5HG"
 
 
     val client = OkHttpClient()
@@ -32,12 +33,10 @@ class PClient() {
                         throw IOException("Запрос к серверу не был успешен:" +
                                 " ${response.code} ${response.message}")
                     }
-                    // пример получения всех заголовков ответа
                     for ((name, value) in response.headers) {
-                        println("$name: $value")
+                        Log.i("Header", "$name, $value")
                     }
-                    // вывод тела ответа
-                    println(response.body!!.string())
+                    Log.i("Body", response.body!!.string())
                 }
             }
         })

@@ -6,6 +6,8 @@ import androidx.room.Insert;
 import androidx.room.Query;
 import androidx.room.Update;
 
+import io.reactivex.rxjava3.core.Completable;
+import io.reactivex.rxjava3.core.Flowable;
 import ru.lim1x.places.room.entities.Markers;
 
 import java.util.List;
@@ -14,13 +16,14 @@ import java.util.List;
 public interface MarkerDao {
 
     @Query("SELECT * FROM Markers")
-    List<Markers>getAll();
+    Flowable<List<Markers>> getAll();
+
 
     @Query("SELECT * FROM Markers WHERE snippet LIKE :snippet")
     Markers getBySnippet(String snippet);
 
     @Insert
-    void insert(Markers markers);
+    Completable insert(Markers markers);
 
     @Update
     void update(Markers markers);
