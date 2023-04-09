@@ -445,19 +445,19 @@ public class PlacesFragment extends Fragment {
     private void getmarkerDB(GoogleMap map){
 
 
-            List<Markers> markers = markerDao.getAll();
-            Iterator<Markers> iterator = markers.iterator();
-            while(iterator.hasNext()){
-                Markers marker = iterator.next();
-                LatLng position = new LatLng(marker.latitude, marker.longitude);
-                boolean draggable = (marker.drag == 1) ? true: false;
-                map.addMarker(new MarkerOptions()
-                        .position(position)
-                        .title(marker.title)
-                        .snippet(marker.snippet)
-                        .draggable(draggable)
-                        .icon(BitmapDescriptorFactory.defaultMarker(marker.color)));
-            }
+//            List<Markers> markers = markerDao.getAll();
+//            Iterator<Markers> iterator = markers.iterator();
+//            while(iterator.hasNext()){
+//                Markers marker = iterator.next();
+//                LatLng position = new LatLng(marker.latitude, marker.longitude);
+//                boolean draggable = (marker.drag == 1) ? true: false;
+//                map.addMarker(new MarkerOptions()
+//                        .position(position)
+//                        .title(marker.title)
+//                        .snippet(marker.snippet)
+//                        .draggable(draggable)
+//                        .icon(BitmapDescriptorFactory.defaultMarker(marker.color)));
+//            }
             return;
 
 

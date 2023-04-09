@@ -22,7 +22,7 @@ public class SigninActivity extends AppCompatActivity {
         fbinding = FragmentMainBinding.inflate(getLayoutInflater());
         setContentView(fbinding.getRoot());
         getSupportFragmentManager().beginTransaction()
-                .add(R.id.container, new SignupFragment()) // or replace с теми же параметрами
+                .add(R.id.container, new SignupFragment())
                 .commit();
 
         if (actionBar != null) {

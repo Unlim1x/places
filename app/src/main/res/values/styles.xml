@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+
     <style name="ProgressBarStyle">
         <item name="colorAccent">@color/SlateBlue</item>
     </style>
@@ -10,5 +11,10 @@
 
     <style name="AppBarStyleDark">
         <item name="colorAccent">@color/AlmostBlack</item>
+    </style>
+
+    <style name="Widget.Theme.Places.MyView" parent="">
+        <item name="android:background">@color/gray_400</item>
+        <item name="exampleColor">@color/light_blue_400</item>
     </style>
 </resources>
