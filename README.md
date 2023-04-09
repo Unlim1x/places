@@ -1,5 +1,5 @@
 Изначально проект задумывался на Java. Потом я его забросил. Но поскольку изучаю Kotlin, то вернулся к нему и произвожу, так называемую, миграцию.
-Небольшой информация по котлину:
+Немного информации по котлину:
 Вкладка места написана на котлине, здесь все файлы по ней: https://github.com/Unlim1x/places/tree/master/app/src/main/java/ru/lim1x/places/ui/main/places
 Простой okhttp клиент здесь: https://github.com/Unlim1x/places/tree/master/app/src/main/java/ru/lim1x/places/back/http
 
